@@ -1,0 +1,12 @@
+FROM golang:alpine
+
+WORKDIR /application
+
+COPY go.mod .
+RUN go mod download
+
+COPY . .
+
+RUN go build -o main ./src/main.go
+
+CMD ["./main"]
