@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"github.com/daniial79/Phone-Book/src/config"
 	"log"
 	"net/http"
 
@@ -9,6 +10,10 @@ import (
 )
 
 func Start() {
+	//TODO: initializing a config object and load it
+	conf := config.NewConfig()
+	fmt.Printf("config object: %+v\n", conf)
+
 	e := echo.New()
 
 	e.GET("/", func(c echo.Context) error {
