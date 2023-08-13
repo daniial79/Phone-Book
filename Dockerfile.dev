@@ -1,12 +1,10 @@
-FROM golang:alpine
+FROM golang:alpine AS dev
 
 WORKDIR /application
 
 COPY go.mod .
 RUN go mod download
 
-COPY . .
+RUN go install -mod=mod github.com/githubnemo/CompileDaemon
 
-RUN go build -o main ./src/main.go
-
-CMD ["./main"]
+ENTRYPOINT CompileDaemon --build="go build ./src/main.go" --command="./main"

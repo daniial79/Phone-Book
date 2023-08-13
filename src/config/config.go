@@ -8,7 +8,7 @@ import (
 
 func envVarSanityCheck(envVar string) string {
 	if len(os.Getenv(envVar)) == 0 {
-		log.Fatalln("Error: you have to provide proper environment variable: " + envVar)
+		log.Fatalln("Error you have to provide proper environment variable: " + envVar)
 	}
 	return os.Getenv(envVar)
 }

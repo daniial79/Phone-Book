@@ -10,9 +10,7 @@ import (
 )
 
 func Start() {
-	//TODO: initializing a config object and load it
-	conf := config.NewConfig()
-	fmt.Printf("config object: %+v\n", conf)
+	_ = config.NewConfig()
 
 	e := echo.New()
 
@@ -20,7 +18,7 @@ func Start() {
 		return c.JSON(http.StatusOK, struct {
 			Message string `json:"message"`
 		}{
-			Message: "hello from Echo server",
+			Message: "nina khole",
 		})
 	})
 
