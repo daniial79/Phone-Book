@@ -35,15 +35,15 @@ type Config struct {
 	dbName     string
 }
 
-func (c Config) getPort() string {
+func (c Config) GetPort() string {
 	return ":" + c.port
 }
 
-func (c Config) getDatabaseDriver() string {
+func (c Config) GetDatabaseDriver() string {
 	return c.dbDriver
 }
 
-func (c Config) getDataSourceName() string {
+func (c Config) GetDataSourceName() string {
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		c.dbHost,
 		c.dbPort,

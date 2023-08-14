@@ -10,7 +10,7 @@ import (
 )
 
 func Start() {
-	_ = config.NewConfig()
+	conf := config.NewConfig()
 
 	e := echo.New()
 
@@ -23,7 +23,7 @@ func Start() {
 	})
 
 	fmt.Println("server is up and running on port 8000...")
-	if err := e.Start(":8000"); err != nil {
+	if err := e.Start(conf.GetPort()); err != nil {
 		log.Fatalln(err)
 	}
 }
