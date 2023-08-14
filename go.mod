@@ -2,8 +2,9 @@ module github.com/daniial79/Phone-Book
 
 go 1.20
 
+require github.com/labstack/echo/v4 v4.11.1
+
 require (
-	github.com/labstack/echo/v4 v4.11.1 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect

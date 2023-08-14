@@ -18,7 +18,7 @@ func Start() {
 		return c.JSON(http.StatusOK, struct {
 			Message string `json:"message"`
 		}{
-			Message: "nina khole",
+			Message: "hello from echo server",
 		})
 	})
 
