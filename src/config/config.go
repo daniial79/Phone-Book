@@ -6,6 +6,8 @@ import (
 	"os"
 )
 
+var AppConf Config
+
 func envVarSanityCheck(envVar string) string {
 	if len(os.Getenv(envVar)) == 0 {
 		log.Fatalln("Error you have to provide proper environment variable: " + envVar)
@@ -13,8 +15,8 @@ func envVarSanityCheck(envVar string) string {
 	return os.Getenv(envVar)
 }
 
-func NewConfig() Config {
-	return Config{
+func LoadConfig() {
+	AppConf = Config{
 		port:       envVarSanityCheck("PORT"),
 		dbDriver:   envVarSanityCheck("DB_DRIVER"),
 		dbHost:     envVarSanityCheck("DB_HOST"),
