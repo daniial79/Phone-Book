@@ -1,9 +1,9 @@
 package app
 
 import (
-	"fmt"
 	"github.com/daniial79/Phone-Book/src/config"
 	"github.com/daniial79/Phone-Book/src/db"
+	"github.com/daniial79/Phone-Book/src/logger"
 	"log"
 	"net/http"
 
@@ -24,7 +24,7 @@ func Start() {
 		})
 	})
 
-	fmt.Println("server is up and running on port 8000...")
+	logger.Info("Server is up and running on port 8000...")
 	if err := e.Start(config.AppConf.GetPort()); err != nil {
 		log.Fatalln(err)
 	}
