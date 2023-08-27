@@ -1,5 +1,7 @@
 package core
 
+import "github.com/daniial79/Phone-Book/src/errs"
+
 // Email core object definition
 type Email struct {
 	ID        string `db:"id"`
@@ -9,4 +11,5 @@ type Email struct {
 
 // EmailRepository secondary port
 type EmailRepository interface {
+	Create(Email) (*Email, *errs.AppError)
 }
