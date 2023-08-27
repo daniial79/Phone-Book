@@ -11,5 +11,7 @@ type Contact struct {
 
 // ContactRepository Contact secondary port
 type ContactRepository interface {
-	Create(Contact) (*Contact, *errs.AppError)
+	CreateEmail(Email) (*Email, *errs.AppError)
+	CreateNumber(Number) (*Number, *errs.AppError)
+	CreateContact(Contact) (*Contact, *errs.AppError)
 }
