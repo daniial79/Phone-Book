@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/daniial79/Phone-Book/src/logger"
 	"log"
 	"os"
 )
@@ -25,6 +26,7 @@ func LoadConfig() {
 		dbPassword: envVarSanityCheck("DB_PASSWORD"),
 		dbName:     envVarSanityCheck("DB_NAME"),
 	}
+	logger.Info("App config is successfully loaded")
 }
 
 type Config struct {

@@ -20,7 +20,7 @@ func NewNotFoundErr(message string) *AppError {
 	}
 }
 
-func NewUnexpectedDbErr(message string) *AppError {
+func NewUnexpectedErr(message string) *AppError {
 	return &AppError{
 		StatusCode: http.StatusInternalServerError,
 		Message:    message,
@@ -28,6 +28,13 @@ func NewUnexpectedDbErr(message string) *AppError {
 }
 
 func NewValidationErr(message string) *AppError {
+	return &AppError{
+		StatusCode: http.StatusUnprocessableEntity,
+		Message:    message,
+	}
+}
+
+func NewUnProcessableErr(message string) *AppError {
 	return &AppError{
 		StatusCode: http.StatusUnprocessableEntity,
 		Message:    message,

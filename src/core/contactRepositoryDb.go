@@ -12,68 +12,97 @@ type ContactRepositoryDb struct {
 	client *sql.DB
 }
 
-func (r ContactRepositoryDb) CreateEmail(e Email) (*Email, *errs.AppError) {
-	insertSql := `INSERT INTO emails(contact_id, address) VALUES ($1, $2) RETURNING id`
-
-	result, err := r.client.Exec(insertSql, e.ContactId, e.Address)
-	if err != nil {
-		logger.Error("Error while inserting record to emails table: " + err.Error())
-		return nil, errs.NewUnexpectedDbErr("Unexpected internal error")
-	}
-
-	integerId, err := result.LastInsertId()
-	if err != nil {
-		logger.Error("Error while retrieving last inserted record to emails table to string: " + err.Error())
-		return nil, errs.NewUnexpectedDbErr("Unexpected internal error")
-	}
-
-	strId := strconv.Itoa(int(integerId))
-	e.ID = strId
-
-	return &e, nil
-
+func NewContactRepositoryDb(client *sql.DB) ContactRepositoryDb {
+	return ContactRepositoryDb{client: client}
 }
 
-func (r ContactRepositoryDb) CreateNumber(n Number) (*Number, *errs.AppError) {
-	insertSql := `INSERT INTO numbers(id, contact_id, number, label) VALUES ($1, $2) RETURNING id`
+func (r ContactRepositoryDb) CreateContact(c *Contact) (*Contact, *errs.AppError) {
+	//TODO: Find better approach with smaller Space Complexity
+	insertedNumbers := make([]Number, 0)
+	insertedEmails := make([]Email, 0)
+	tx, err := r.client.Begin()
 
-	result, err := r.client.Exec(insertSql, n.ContactId, n.Number, n.Label)
+	//inserting new record to contact tables
 	if err != nil {
-		logger.Error("Error while inserting record to numbers table: " + err.Error())
-		return nil, errs.NewUnexpectedDbErr("Unexpected internal error")
+		logger.Error("Error while starting transaction in order to create new contact: " + err.Error())
+		return nil, errs.NewUnexpectedErr("Unexpected database error")
 	}
 
-	integerId, err := result.LastInsertId()
+	contactInsertSql := `INSERT INTO contacts(first_name, last_name) VALUES($1, $2) RETURNING id`
+	cRow := tx.QueryRow(contactInsertSql, c.FirstName, c.LastName)
+
+	var cIntegerId int
+	err = cRow.Scan(&cIntegerId)
 	if err != nil {
-		logger.Error("Error while retrieving last inserted record to numbers table to string: " + err.Error())
-		return nil, errs.NewUnexpectedDbErr("Unexpected internal error")
+		txErr := tx.Rollback()
+		if txErr != nil {
+			logger.Error("Error while rollback the crate contact transaction: " + txErr.Error())
+		}
+		logger.Error("Error while fetching last inserted id from contact tables: " + err.Error())
+		return nil, errs.NewUnexpectedErr("Unexpected database error")
 	}
 
-	strId := strconv.Itoa(int(integerId))
-	n.ID = strId
+	cStringId := strconv.Itoa(cIntegerId)
+	c.Id = cStringId
 
-	return &n, nil
+	//inserting new record(s) into numbers
+	insertNumbersSql := `INSERT INTO numbers(contact_id, number, label) VALUES ($1, $2, $3) RETURNING id`
+	for _, number := range c.PhoneNumbers {
+		nRow := tx.QueryRow(insertNumbersSql,
+			c.Id,
+			number.PhoneNumber,
+			number.Label,
+		)
 
-}
+		var nIntegerId int
+		err = nRow.Scan(&nIntegerId)
 
-func (r ContactRepositoryDb) CreateContact(c Contact) (*Contact, *errs.AppError) {
-	insertSql := `INSERT INTO contacts(first_name, last_name) VALUES ($1, $2) RETURNING id`
+		if err != nil {
+			txErr := tx.Rollback()
+			if txErr != nil {
+				logger.Error("Error while rollback the crate contact transaction: " + txErr.Error())
+			}
+			logger.Error("Error while fetching last inserted id from numbers tables: " + err.Error())
+			return nil, errs.NewUnexpectedErr("Unexpected database error")
+		}
 
-	result, err := r.client.Exec(insertSql, c.FirstName, c.LastName)
-	if err != nil {
-		logger.Error("Error while inserting record to contacts table: " + err.Error())
-		return nil, errs.NewUnexpectedDbErr("Unexpected internal error")
+		nStringId := strconv.Itoa(nIntegerId)
+		number.Id = nStringId
+		number.ContactId = c.Id
+		insertedNumbers = append(insertedNumbers, number)
 	}
 
-	integerId, err := result.LastInsertId()
-	if err != nil {
-		logger.Error("Error while retrieving last inserted record to contacts table to string: " + err.Error())
-		return nil, errs.NewUnexpectedDbErr("Unexpected internal error")
+	//inserting new record into emails
+	insertEmailSql := `INSERT INTO emails(contact_id, address) VALUES ($1, $2) RETURNING id`
+	for _, email := range c.Emails {
+		eRow := tx.QueryRow(insertEmailSql, c.Id, email.Address)
+
+		var eIntegerId int
+		err = eRow.Scan(&eIntegerId)
+		if err != nil {
+			txErr := tx.Rollback()
+			if txErr != nil {
+				logger.Error("Error while rollback the crate contact transaction: " + txErr.Error())
+			}
+			logger.Error("Error while fetching last inserted id from emails tables: " + err.Error())
+			return nil, errs.NewUnexpectedErr("Unexpected database error")
+		}
+
+		eStringId := strconv.Itoa(eIntegerId)
+		email.Id = eStringId
+		email.ContactId = c.Id
+
+		insertedEmails = append(insertedEmails, email)
 	}
 
-	strId := strconv.Itoa(int(integerId))
-	c.Id = strId
+	txErr := tx.Commit()
+	if txErr != nil {
+		logger.Error("Error while committing the new created contact transaction")
+		return nil, errs.NewUnexpectedErr("Unexpected database error")
+	}
 
-	return &c, nil
+	c.PhoneNumbers = insertedNumbers
+	c.Emails = insertedEmails
 
+	return c, nil
 }

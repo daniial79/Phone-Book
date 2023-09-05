@@ -1,28 +1,23 @@
 package app
 
 import (
+	"fmt"
 	"github.com/daniial79/Phone-Book/src/config"
 	"github.com/daniial79/Phone-Book/src/db"
 	"github.com/daniial79/Phone-Book/src/logger"
-	"log"
-	"net/http"
-
+	"github.com/daniial79/Phone-Book/src/routes"
 	"github.com/labstack/echo/v4"
+	"log"
 )
 
 func Start() {
 	config.LoadConfig()
-	_ = db.GetNewConnection()
+	fmt.Println(config.AppConf.GetDataSourceName())
+	dbClient := db.GetNewConnection()
 
 	e := echo.New()
 
-	e.GET("/", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, struct {
-			Message string `json:"message"`
-		}{
-			Message: "salam nina",
-		})
-	})
+	routes.SetContactRoutes(e, dbClient)
 
 	logger.Info("Server is up and running on port 8000...")
 	if err := e.Start(config.AppConf.GetPort()); err != nil {
