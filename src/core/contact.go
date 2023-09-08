@@ -5,6 +5,11 @@ import (
 	"github.com/daniial79/Phone-Book/src/errs"
 )
 
+// ContactRepository Contact secondary port
+type ContactRepository interface {
+	CreateContact(*Contact) (*Contact, *errs.AppError)
+}
+
 // Contact contact core object definition
 type Contact struct {
 	Id           string `db:"id"`
@@ -22,7 +27,7 @@ func (c Contact) ToContactResponseDto() *dto.ContactResponse {
 	response.LastName = c.LastName
 
 	for _, number := range c.PhoneNumbers {
-		response.PhoneNumbers = append(response.PhoneNumbers, dto.PhoneNumberResp{
+		response.PhoneNumbers = append(response.PhoneNumbers, dto.PhoneNumberResponse{
 			Id:        number.Id,
 			ContactId: number.ContactId,
 			Number:    number.PhoneNumber,
@@ -31,7 +36,7 @@ func (c Contact) ToContactResponseDto() *dto.ContactResponse {
 	}
 
 	for _, email := range c.Emails {
-		response.Emails = append(response.Emails, dto.EmailResp{
+		response.Emails = append(response.Emails, dto.EmailResponse{
 			Id:        email.Id,
 			ContactId: email.ContactId,
 			Address:   email.Address,
@@ -39,9 +44,4 @@ func (c Contact) ToContactResponseDto() *dto.ContactResponse {
 	}
 
 	return response
-}
-
-// ContactRepository Contact secondary port
-type ContactRepository interface {
-	CreateContact(*Contact) (*Contact, *errs.AppError)
 }

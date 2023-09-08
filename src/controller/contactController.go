@@ -9,11 +9,15 @@ import (
 )
 
 type ContactController struct {
-	service service.ContactService
+	cService service.ContactService
+	nService service.NumberService
 }
 
-func NewContactController(s service.ContactService) ContactController {
-	return ContactController{service: s}
+func NewContactController(
+	cs service.ContactService,
+	ns service.NumberService,
+) ContactController {
+	return ContactController{cService: cs, nService: ns}
 }
 
 func (c ContactController) NewContact(ctx echo.Context) error {
@@ -24,10 +28,26 @@ func (c ContactController) NewContact(ctx echo.Context) error {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
 
-	response, err := c.service.NewContact(requestBody)
+	response, err := c.cService.NewContact(requestBody)
 	if err != nil {
 		return ctx.JSONPretty(err.StatusCode, err.AsMessage(), "  ")
 	}
 
 	return ctx.JSONPretty(http.StatusCreated, response, "  ")
+}
+
+func (c ContactController) AddNewNumber(ctx echo.Context) error {
+	var requestBody dto.AddNumberRequest
+
+	if err := ctx.Bind(&requestBody); err != nil {
+		appErr := errs.NewUnProcessableErr(err.Error())
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+	}
+
+	response, err := c.nService.AddNewNumbers(requestBody)
+	if err != nil {
+		return ctx.JSONPretty(err.StatusCode, err.AsMessage(), " ")
+	}
+
+	return ctx.JSONPretty(http.StatusCreated, response, " ")
 }
