@@ -7,7 +7,7 @@ import (
 
 // NumberRepository Number secondary port
 type NumberRepository interface {
-	AddNewNumber(Number) (*Number, *errs.AppError)
+	AddNewNumber([]Number) ([]Number, *errs.AppError)
 	CheckContactExistenceById(string) *errs.AppError
 }
 
@@ -19,8 +19,8 @@ type Number struct {
 	Label       string `db:"label"`
 }
 
-func (n Number) ToAddNumberResponseDto() *dto.AddNumberResponse {
-	return &dto.AddNumberResponse{
+func (n Number) ToAddNumberResponseDto() dto.AddNumberResponse {
+	return dto.AddNumberResponse{
 		Id:        n.Id,
 		ContactId: n.ContactId,
 		Number:    n.PhoneNumber,

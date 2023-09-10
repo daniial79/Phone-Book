@@ -11,13 +11,15 @@ import (
 type ContactController struct {
 	cService service.ContactService
 	nService service.NumberService
+	eService service.EmailService
 }
 
 func NewContactController(
 	cs service.ContactService,
 	ns service.NumberService,
+	es service.EmailService,
 ) ContactController {
-	return ContactController{cService: cs, nService: ns}
+	return ContactController{cService: cs, nService: ns, eService: es}
 }
 
 func (c ContactController) NewContact(ctx echo.Context) error {
@@ -36,15 +38,31 @@ func (c ContactController) NewContact(ctx echo.Context) error {
 	return ctx.JSONPretty(http.StatusCreated, response, "  ")
 }
 
-func (c ContactController) AddNewNumber(ctx echo.Context) error {
-	var requestBody dto.AddNumberRequest
+func (c ContactController) AddNewNumbers(ctx echo.Context) error {
+	request := make([]dto.AddNumberRequest, 0)
 
-	if err := ctx.Bind(&requestBody); err != nil {
+	if err := ctx.Bind(&request); err != nil {
 		appErr := errs.NewUnProcessableErr(err.Error())
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
 
-	response, err := c.nService.AddNewNumbers(requestBody)
+	response, err := c.nService.AddNewNumbers(request)
+	if err != nil {
+		return ctx.JSONPretty(err.StatusCode, err.AsMessage(), " ")
+	}
+
+	return ctx.JSONPretty(http.StatusCreated, response, " ")
+}
+
+func (c ContactController) AddNewEmails(ctx echo.Context) error {
+	request := make([]dto.AddEmailRequest, 0)
+
+	if err := ctx.Bind(&request); err != nil {
+		appErr := errs.NewUnProcessableErr(err.Error())
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), " ")
+	}
+
+	response, err := c.eService.AddNewEmails(request)
 	if err != nil {
 		return ctx.JSONPretty(err.StatusCode, err.AsMessage(), " ")
 	}
