@@ -9,17 +9,14 @@ import (
 )
 
 type ContactController struct {
-	cService service.ContactService
-	nService service.NumberService
-	eService service.EmailService
+	service service.ContactService
 }
 
 func NewContactController(
-	cs service.ContactService,
-	ns service.NumberService,
-	es service.EmailService,
+	s service.ContactService,
+
 ) ContactController {
-	return ContactController{cService: cs, nService: ns, eService: es}
+	return ContactController{service: s}
 }
 
 func (c ContactController) NewContact(ctx echo.Context) error {
@@ -30,7 +27,7 @@ func (c ContactController) NewContact(ctx echo.Context) error {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
 
-	response, err := c.cService.NewContact(requestBody)
+	response, err := c.service.NewContact(requestBody)
 	if err != nil {
 		return ctx.JSONPretty(err.StatusCode, err.AsMessage(), "  ")
 	}
@@ -47,7 +44,7 @@ func (c ContactController) AddNewNumbers(ctx echo.Context) error {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
 
-	response, err := c.nService.AddNewNumbers(request, contactId)
+	response, err := c.service.AddNewNumbers(request, contactId)
 	if err != nil {
 		return ctx.JSONPretty(err.StatusCode, err.AsMessage(), "  ")
 	}
@@ -64,7 +61,7 @@ func (c ContactController) AddNewEmails(ctx echo.Context) error {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
 
-	response, err := c.eService.AddNewEmails(request, contactId)
+	response, err := c.service.AddNewEmails(request, contactId)
 	if err != nil {
 		return ctx.JSONPretty(err.StatusCode, err.AsMessage(), "  ")
 	}
@@ -73,7 +70,12 @@ func (c ContactController) AddNewEmails(ctx echo.Context) error {
 }
 
 func (c ContactController) GetContacts(ctx echo.Context) error {
-	response, appErr := c.cService.GetContacts()
+	queryParams := map[string]string{
+		"numbers": ctx.QueryParam("numbers"),
+		"emails":  ctx.QueryParam("emails"),
+	}
+
+	response, appErr := c.service.GetContacts(queryParams)
 	if appErr != nil {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}

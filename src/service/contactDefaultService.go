@@ -48,8 +48,33 @@ func (s ContactDefaultService) NewContact(request dto.NewContactRequest) (*dto.C
 	return response, nil
 }
 
-func (s ContactDefaultService) GetContacts() ([]dto.ContactResponse, *errs.AppError) {
-	coreTypedContacts, err := s.repo.GetAllContacts()
+func (s ContactDefaultService) AddNewNumbers(request []dto.AddNumberRequest, contactId string) ([]dto.AddNumberResponse, *errs.AppError) {
+	coreTypedNumbers := make([]core.Number, len(request))
+
+	for i, numberRequest := range request {
+		coreTypedNumbers[i] = core.Number{
+			Id:          "",
+			ContactId:   contactId,
+			PhoneNumber: numberRequest.Number,
+			Label:       numberRequest.Label,
+		}
+	}
+
+	addedNumbers, err := s.repo.AddNewNumber(coreTypedNumbers)
+	if err != nil {
+		return nil, err
+	}
+
+	response := make([]dto.AddNumberResponse, len(addedNumbers))
+	for i, number := range addedNumbers {
+		response[i] = number.ToAddNumberResponseDto()
+	}
+
+	return response, nil
+}
+
+func (s ContactDefaultService) GetContacts(options map[string]string) ([]dto.ContactResponse, *errs.AppError) {
+	coreTypedContacts, err := s.repo.GetAllContacts(options)
 	if err != nil {
 		return nil, err
 	}
@@ -61,6 +86,30 @@ func (s ContactDefaultService) GetContacts() ([]dto.ContactResponse, *errs.AppEr
 			FirstName: contact.FirstName,
 			LastName:  contact.LastName,
 		}
+	}
+
+	return response, nil
+}
+
+func (s ContactDefaultService) AddNewEmails(request []dto.AddEmailRequest, contactId string) ([]dto.AddEmailResponse, *errs.AppError) {
+	coreTypedEmails := make([]core.Email, len(request))
+
+	for i, email := range request {
+		coreTypedEmails[i] = core.Email{
+			Id:        "",
+			ContactId: contactId,
+			Address:   email.Address,
+		}
+	}
+
+	addedEmails, err := s.repo.AddNewEmails(coreTypedEmails)
+	if err != nil {
+		return nil, err
+	}
+
+	response := make([]dto.AddEmailResponse, len(coreTypedEmails))
+	for i, email := range addedEmails {
+		response[i] = email.ToAddEmailResponseDto()
 	}
 
 	return response, nil

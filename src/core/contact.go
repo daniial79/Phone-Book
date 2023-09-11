@@ -8,7 +8,10 @@ import (
 // ContactRepository Contact secondary port
 type ContactRepository interface {
 	CreateContact(*Contact) (*Contact, *errs.AppError)
-	GetAllContacts() ([]Contact, *errs.AppError)
+	CheckContactExistenceById(cId string) *errs.AppError
+	AddNewNumber(n []Number) ([]Number, *errs.AppError)
+	AddNewEmails(e []Email) ([]Email, *errs.AppError)
+	GetAllContacts(filters map[string]string) ([]Contact, *errs.AppError)
 }
 
 // Contact contact core object definition

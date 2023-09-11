@@ -107,28 +107,82 @@ func (r ContactRepositoryDb) CreateContact(c *Contact) (*Contact, *errs.AppError
 	return c, nil
 }
 
-func (r ContactRepositoryDb) GetAllContacts() ([]Contact, *errs.AppError) {
-	selectSql := `SELECT id, first_name, last_name FROM contacts`
-	rows, err := r.client.Query(selectSql)
-
+func (r ContactRepositoryDb) CheckContactExistenceById(cId string) *errs.AppError {
+	var contactId int
+	checkContactSql := `SELECT id FROM contacts WHERE id =  $1`
+	row := r.client.QueryRow(checkContactSql, cId)
+	err := row.Scan(&contactId)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, errs.NewNotFoundErr("contacts not found")
+			return errs.NewNotFoundErr("contact with such id is not found")
 		}
-		logger.Error("Error while selecting contacts from database: " + err.Error())
-		return nil, errs.NewUnexpectedErr("Unexpected error happened")
+		logger.Error("Error while retrieving contact id for existence check (number repo): " + err.Error())
+		return errs.NewUnexpectedErr("Unexpected error happened")
+	}
+	return nil
+}
+
+func (r ContactRepositoryDb) AddNewNumber(n []Number) ([]Number, *errs.AppError) {
+	//checking the existence of contact with specified id
+	for _, number := range n {
+		appErr := r.CheckContactExistenceById(number.ContactId)
+		if appErr != nil {
+			return nil, appErr
+		}
 	}
 
-	contacts := make([]Contact, 0)
-	for rows.Next() {
-		var c Contact
-		err = rows.Scan(&c.Id, &c.FirstName, &c.LastName)
+	//adding number associated with existing contact id
+	result := make([]Number, len(n))
+	insertSql := `INSERT INTO numbers(contact_id, number, label) VALUES($1, $2, $3) RETURNING id`
+	for i, number := range n {
+
+		var integerId int
+		row := r.client.QueryRow(insertSql, number.ContactId, number.PhoneNumber, number.Label)
+		err := row.Scan(&integerId)
 		if err != nil {
-			logger.Error("Error while scanning retrieved records to variable: " + err.Error())
+			logger.Error("Error while retrieving id for last inserted number into existing contact: " + err.Error())
 			return nil, errs.NewUnexpectedErr("Unexpected error happened")
+
 		}
-		contacts = append(contacts, c)
+		lastInsertedId := strconv.Itoa(integerId)
+		number.Id = lastInsertedId
+
+		result[i] = number
+
 	}
 
-	return contacts, nil
+	return result, nil
+}
+
+func (r ContactRepositoryDb) AddNewEmails(e []Email) ([]Email, *errs.AppError) {
+	for _, email := range e {
+		appErr := r.CheckContactExistenceById(email.ContactId)
+		if appErr != nil {
+			return nil, appErr
+		}
+	}
+
+	result := make([]Email, len(e))
+	insertSql := `INSERT INTO emails(contact_id, address) VALUES($1, $2) RETURNING id`
+	for i, email := range e {
+		var integerId int
+		row := r.client.QueryRow(insertSql, email.ContactId, email.Address)
+		err := row.Scan(&integerId)
+		if err != nil {
+			logger.Error("Error while retrieving id for last inserted email into existing contact:" + err.Error())
+			return nil, errs.NewUnexpectedErr("Unexpected error happend")
+		}
+
+		lastInsertedId := strconv.Itoa(integerId)
+		email.Id = lastInsertedId
+
+		result[i] = email
+	}
+
+	return result, nil
+}
+
+func (r ContactRepositoryDb) GetAllContacts(filters map[string]string) ([]Contact, *errs.AppError) {
+	//TODO: find a fucking solution for joining tables :/
+	return nil, errs.NewUnexpectedErr("Unexpected error happened")
 }

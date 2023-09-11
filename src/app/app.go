@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"github.com/daniial79/Phone-Book/src/config"
 	"github.com/daniial79/Phone-Book/src/db"
 	"github.com/daniial79/Phone-Book/src/logger"
@@ -12,9 +11,7 @@ import (
 
 func Start() {
 	config.LoadConfig()
-	fmt.Println(config.AppConf.GetDataSourceName())
 	dbClient := db.GetNewConnection()
-
 	e := echo.New()
 
 	routes.SetContactRoutes(e, dbClient)

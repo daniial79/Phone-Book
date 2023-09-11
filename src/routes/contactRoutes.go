@@ -12,17 +12,7 @@ func SetContactRoutes(r *echo.Echo, db *sql.DB) {
 	contactRepository := core.NewContactRepositoryDb(db)
 	contactService := service.NewContactDefaultService(contactRepository)
 
-	numberRepository := core.NewNumberRepositoryDb(db)
-	numberService := service.NewNumberDefaultService(numberRepository)
-
-	emailRepository := core.NewEmailRepositoryDb(db)
-	emailService := service.NewEmailDefaultService(emailRepository)
-
-	contactController := controller.NewContactController(
-		contactService,
-		numberService,
-		emailService,
-	)
+	contactController := controller.NewContactController(contactService)
 
 	r.POST("/contacts", contactController.NewContact)
 	r.POST("/contacts/:contactId/number", contactController.AddNewNumbers)
