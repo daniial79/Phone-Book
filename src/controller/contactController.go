@@ -71,3 +71,12 @@ func (c ContactController) AddNewEmails(ctx echo.Context) error {
 
 	return ctx.JSONPretty(http.StatusCreated, response, "  ")
 }
+
+func (c ContactController) GetContacts(ctx echo.Context) error {
+	response, appErr := c.cService.GetContacts()
+	if appErr != nil {
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+	}
+
+	return ctx.JSONPretty(http.StatusOK, response, "  ")
+}

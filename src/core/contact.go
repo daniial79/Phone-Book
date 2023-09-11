@@ -8,6 +8,7 @@ import (
 // ContactRepository Contact secondary port
 type ContactRepository interface {
 	CreateContact(*Contact) (*Contact, *errs.AppError)
+	GetAllContacts() ([]Contact, *errs.AppError)
 }
 
 // Contact contact core object definition

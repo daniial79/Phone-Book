@@ -2,6 +2,7 @@ package core
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/daniial79/Phone-Book/src/errs"
 	"github.com/daniial79/Phone-Book/src/logger"
 	"strconv"
@@ -17,7 +18,6 @@ func NewContactRepositoryDb(client *sql.DB) ContactRepositoryDb {
 }
 
 func (r ContactRepositoryDb) CreateContact(c *Contact) (*Contact, *errs.AppError) {
-	//TODO: Find better approach with smaller Space Complexity
 	insertedNumbers := make([]Number, 0)
 	insertedEmails := make([]Email, 0)
 	tx, err := r.client.Begin()
@@ -105,4 +105,30 @@ func (r ContactRepositoryDb) CreateContact(c *Contact) (*Contact, *errs.AppError
 	c.Emails = insertedEmails
 
 	return c, nil
+}
+
+func (r ContactRepositoryDb) GetAllContacts() ([]Contact, *errs.AppError) {
+	selectSql := `SELECT id, first_name, last_name FROM contacts`
+	rows, err := r.client.Query(selectSql)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errs.NewNotFoundErr("contacts not found")
+		}
+		logger.Error("Error while selecting contacts from database: " + err.Error())
+		return nil, errs.NewUnexpectedErr("Unexpected error happened")
+	}
+
+	contacts := make([]Contact, 0)
+	for rows.Next() {
+		var c Contact
+		err = rows.Scan(&c.Id, &c.FirstName, &c.LastName)
+		if err != nil {
+			logger.Error("Error while scanning retrieved records to variable: " + err.Error())
+			return nil, errs.NewUnexpectedErr("Unexpected error happened")
+		}
+		contacts = append(contacts, c)
+	}
+
+	return contacts, nil
 }

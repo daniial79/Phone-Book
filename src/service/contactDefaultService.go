@@ -47,3 +47,21 @@ func (s ContactDefaultService) NewContact(request dto.NewContactRequest) (*dto.C
 	response := createdContact.ToContactResponseDto()
 	return response, nil
 }
+
+func (s ContactDefaultService) GetContacts() ([]dto.ContactResponse, *errs.AppError) {
+	coreTypedContacts, err := s.repo.GetAllContacts()
+	if err != nil {
+		return nil, err
+	}
+
+	response := make([]dto.ContactResponse, len(coreTypedContacts))
+	for i, contact := range coreTypedContacts {
+		response[i] = dto.ContactResponse{
+			Id:        contact.Id,
+			FirstName: contact.FirstName,
+			LastName:  contact.LastName,
+		}
+	}
+
+	return response, nil
+}
