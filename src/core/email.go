@@ -20,8 +20,7 @@ type Email struct {
 
 func (e Email) ToAddEmailResponseDto() dto.AddEmailResponse {
 	return dto.AddEmailResponse{
-		Id:        e.Id,
-		ContactId: e.ContactId,
-		Address:   e.Address,
+		Id:      e.Id,
+		Address: e.Address,
 	}
 }

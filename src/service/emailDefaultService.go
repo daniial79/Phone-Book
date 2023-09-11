@@ -15,13 +15,13 @@ func NewEmailDefaultService(repo core.EmailRepository) EmailDefaultService {
 	return EmailDefaultService{repo}
 }
 
-func (s EmailDefaultService) AddNewEmails(request []dto.AddEmailRequest) ([]dto.AddEmailResponse, *errs.AppError) {
+func (s EmailDefaultService) AddNewEmails(request []dto.AddEmailRequest, contactId string) ([]dto.AddEmailResponse, *errs.AppError) {
 	coreTypedEmails := make([]core.Email, len(request))
 
 	for i, email := range request {
 		coreTypedEmails[i] = core.Email{
 			Id:        "",
-			ContactId: email.ContactId,
+			ContactId: contactId,
 			Address:   email.Address,
 		}
 	}

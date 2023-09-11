@@ -21,9 +21,8 @@ type Number struct {
 
 func (n Number) ToAddNumberResponseDto() dto.AddNumberResponse {
 	return dto.AddNumberResponse{
-		Id:        n.Id,
-		ContactId: n.ContactId,
-		Number:    n.PhoneNumber,
-		Label:     n.Label,
+		Id:     n.Id,
+		Number: n.PhoneNumber,
+		Label:  n.Label,
 	}
 }

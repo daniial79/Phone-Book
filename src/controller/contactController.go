@@ -39,6 +39,7 @@ func (c ContactController) NewContact(ctx echo.Context) error {
 }
 
 func (c ContactController) AddNewNumbers(ctx echo.Context) error {
+	contactId := ctx.Param("contactId")
 	request := make([]dto.AddNumberRequest, 0)
 
 	if err := ctx.Bind(&request); err != nil {
@@ -46,26 +47,27 @@ func (c ContactController) AddNewNumbers(ctx echo.Context) error {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
 
-	response, err := c.nService.AddNewNumbers(request)
+	response, err := c.nService.AddNewNumbers(request, contactId)
 	if err != nil {
-		return ctx.JSONPretty(err.StatusCode, err.AsMessage(), " ")
+		return ctx.JSONPretty(err.StatusCode, err.AsMessage(), "  ")
 	}
 
-	return ctx.JSONPretty(http.StatusCreated, response, " ")
+	return ctx.JSONPretty(http.StatusCreated, response, "  ")
 }
 
 func (c ContactController) AddNewEmails(ctx echo.Context) error {
+	contactId := ctx.Param("contactId")
 	request := make([]dto.AddEmailRequest, 0)
 
 	if err := ctx.Bind(&request); err != nil {
 		appErr := errs.NewUnProcessableErr(err.Error())
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), " ")
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
 
-	response, err := c.eService.AddNewEmails(request)
+	response, err := c.eService.AddNewEmails(request, contactId)
 	if err != nil {
-		return ctx.JSONPretty(err.StatusCode, err.AsMessage(), " ")
+		return ctx.JSONPretty(err.StatusCode, err.AsMessage(), "  ")
 	}
 
-	return ctx.JSONPretty(http.StatusCreated, response, " ")
+	return ctx.JSONPretty(http.StatusCreated, response, "  ")
 }

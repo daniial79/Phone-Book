@@ -15,13 +15,13 @@ func NewNumberDefaultService(repo core.NumberRepository) NumberDefaultService {
 	return NumberDefaultService{repo}
 }
 
-func (s NumberDefaultService) AddNewNumbers(request []dto.AddNumberRequest) ([]dto.AddNumberResponse, *errs.AppError) {
+func (s NumberDefaultService) AddNewNumbers(request []dto.AddNumberRequest, contactId string) ([]dto.AddNumberResponse, *errs.AppError) {
 	coreTypedNumbers := make([]core.Number, len(request))
 
 	for i, numberRequest := range request {
 		coreTypedNumbers[i] = core.Number{
 			Id:          "",
-			ContactId:   numberRequest.ContactId,
+			ContactId:   contactId,
 			PhoneNumber: numberRequest.Number,
 			Label:       numberRequest.Label,
 		}

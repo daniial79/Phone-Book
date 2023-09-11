@@ -7,5 +7,5 @@ import (
 
 // NumberService primary port
 type NumberService interface {
-	AddNewNumbers([]dto.AddNumberRequest) ([]dto.AddNumberResponse, *errs.AppError)
+	AddNewNumbers([]dto.AddNumberRequest, string) ([]dto.AddNumberResponse, *errs.AppError)
 }

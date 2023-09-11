@@ -7,5 +7,5 @@ import (
 
 // EmailService Primary Port
 type EmailService interface {
-	AddNewEmails([]dto.AddEmailRequest) ([]dto.AddEmailResponse, *errs.AppError)
+	AddNewEmails([]dto.AddEmailRequest, string) ([]dto.AddEmailResponse, *errs.AppError)
 }

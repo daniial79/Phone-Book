@@ -25,6 +25,6 @@ func SetContactRoutes(r *echo.Echo, db *sql.DB) {
 	)
 
 	r.POST("/contacts", contactController.NewContact)
-	r.POST("/contacts/number", contactController.AddNewNumbers)
-	r.POST("/contacts/email", contactController.AddNewEmails)
+	r.POST("/contacts/:contactId/number", contactController.AddNewNumbers)
+	r.POST("/contacts/:contactId/email", contactController.AddNewEmails)
 }
