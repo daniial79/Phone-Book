@@ -73,24 +73,6 @@ func (s ContactDefaultService) AddNewNumbers(request []dto.AddNumberRequest, con
 	return response, nil
 }
 
-func (s ContactDefaultService) GetContacts(options map[string]string) ([]dto.NewContactResponse, *errs.AppError) {
-	coreTypedContacts, err := s.repo.GetAllContacts(options)
-	if err != nil {
-		return nil, err
-	}
-
-	response := make([]dto.NewContactResponse, len(coreTypedContacts))
-	for i, contact := range coreTypedContacts {
-		response[i] = dto.NewContactResponse{
-			Id:        contact.Id,
-			FirstName: contact.FirstName,
-			LastName:  contact.LastName,
-		}
-	}
-
-	return response, nil
-}
-
 func (s ContactDefaultService) AddNewEmails(request []dto.AddEmailRequest, contactId string) ([]dto.AddEmailResponse, *errs.AppError) {
 	coreTypedEmails := make([]core.Email, len(request))
 
@@ -110,6 +92,24 @@ func (s ContactDefaultService) AddNewEmails(request []dto.AddEmailRequest, conta
 	response := make([]dto.AddEmailResponse, len(coreTypedEmails))
 	for i, email := range addedEmails {
 		response[i] = email.ToAddEmailResponseDto()
+	}
+
+	return response, nil
+}
+
+func (s ContactDefaultService) GetContacts() ([]dto.NewContactResponse, *errs.AppError) {
+	coreTypedContacts, err := s.repo.GetAllContacts()
+	if err != nil {
+		return nil, err
+	}
+
+	response := make([]dto.NewContactResponse, len(coreTypedContacts))
+	for i, contact := range coreTypedContacts {
+		response[i] = dto.NewContactResponse{
+			Id:        contact.Id,
+			FirstName: contact.FirstName,
+			LastName:  contact.LastName,
+		}
 	}
 
 	return response, nil

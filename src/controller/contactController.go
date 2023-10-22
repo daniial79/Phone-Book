@@ -70,12 +70,8 @@ func (c ContactController) AddNewEmails(ctx echo.Context) error {
 }
 
 func (c ContactController) GetContacts(ctx echo.Context) error {
-	queryParams := map[string]string{
-		"numbers": ctx.QueryParam("numbers"),
-		"emails":  ctx.QueryParam("emails"),
-	}
 
-	response, appErr := c.service.GetContacts(queryParams)
+	response, appErr := c.service.GetContacts()
 	if appErr != nil {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}

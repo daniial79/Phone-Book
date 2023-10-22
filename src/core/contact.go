@@ -11,7 +11,7 @@ type ContactRepository interface {
 	CheckContactExistenceById(cId string) *errs.AppError
 	AddNewNumber(n []Number) ([]Number, *errs.AppError)
 	AddNewEmails(e []Email) ([]Email, *errs.AppError)
-	GetAllContacts(filters map[string]string) ([]Contact, *errs.AppError)
+	GetAllContacts() ([]Contact, *errs.AppError)
 }
 
 // Contact contact core object definition

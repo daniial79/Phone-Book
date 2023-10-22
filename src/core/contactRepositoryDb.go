@@ -182,7 +182,25 @@ func (r ContactRepositoryDb) AddNewEmails(e []Email) ([]Email, *errs.AppError) {
 	return result, nil
 }
 
-func (r ContactRepositoryDb) GetAllContacts(filters map[string]string) ([]Contact, *errs.AppError) {
-	//TODO: find a fucking solution for joining tables :/
-	return nil, errs.NewUnexpectedErr("Unexpected error happened")
+func (r ContactRepositoryDb) GetAllContacts() ([]Contact, *errs.AppError) {
+	contacts := make([]Contact, 0)
+	selectContactSql := `SELECT * FROM contacts`
+
+	rows, err := r.client.Query(selectContactSql)
+	if err != nil {
+		logger.Error("Error while querying contacts table: " + err.Error())
+		return nil, errs.NewUnexpectedErr("Unexpected database error")
+	}
+
+	for rows.Next() {
+		var c Contact
+		err = rows.Scan(&c.Id, &c.FirstName, &c.LastName)
+		if err != nil {
+			logger.Error("Error while scanning retrieved records from contacts table: " + err.Error())
+			return nil, errs.NewUnexpectedErr("Unexpected database error")
+		}
+		contacts = append(contacts, c)
+	}
+
+	return contacts, nil
 }
