@@ -15,7 +15,7 @@ func NewContactDefaultService(repository core.ContactRepository) ContactDefaultS
 	return ContactDefaultService{repo: repository}
 }
 
-func (s ContactDefaultService) NewContact(request dto.NewContactRequest) (*dto.ContactResponse, *errs.AppError) {
+func (s ContactDefaultService) NewContact(request dto.NewContactRequest) (*dto.NewContactResponse, *errs.AppError) {
 	coreTypedObject := new(core.Contact)
 
 	coreTypedObject.Id = ""
@@ -73,15 +73,15 @@ func (s ContactDefaultService) AddNewNumbers(request []dto.AddNumberRequest, con
 	return response, nil
 }
 
-func (s ContactDefaultService) GetContacts(options map[string]string) ([]dto.ContactResponse, *errs.AppError) {
+func (s ContactDefaultService) GetContacts(options map[string]string) ([]dto.NewContactResponse, *errs.AppError) {
 	coreTypedContacts, err := s.repo.GetAllContacts(options)
 	if err != nil {
 		return nil, err
 	}
 
-	response := make([]dto.ContactResponse, len(coreTypedContacts))
+	response := make([]dto.NewContactResponse, len(coreTypedContacts))
 	for i, contact := range coreTypedContacts {
-		response[i] = dto.ContactResponse{
+		response[i] = dto.NewContactResponse{
 			Id:        contact.Id,
 			FirstName: contact.FirstName,
 			LastName:  contact.LastName,

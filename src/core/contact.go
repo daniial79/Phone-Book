@@ -23,8 +23,8 @@ type Contact struct {
 	Emails       []Email
 }
 
-func (c Contact) ToContactResponseDto() *dto.ContactResponse {
-	response := new(dto.ContactResponse)
+func (c Contact) ToContactResponseDto() *dto.NewContactResponse {
+	response := new(dto.NewContactResponse)
 
 	response.Id = c.Id
 	response.FirstName = c.FirstName
