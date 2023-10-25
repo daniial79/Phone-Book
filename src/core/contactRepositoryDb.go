@@ -170,7 +170,7 @@ func (r ContactRepositoryDb) AddNewEmails(e []Email) ([]Email, *errs.AppError) {
 		err := row.Scan(&integerId)
 		if err != nil {
 			logger.Error("Error while retrieving id for last inserted email into existing contact:" + err.Error())
-			return nil, errs.NewUnexpectedErr("Unexpected error happend")
+			return nil, errs.NewUnexpectedErr("Unexpected error happened")
 		}
 
 		lastInsertedId := strconv.Itoa(integerId)
@@ -203,4 +203,52 @@ func (r ContactRepositoryDb) GetAllContacts() ([]Contact, *errs.AppError) {
 	}
 
 	return contacts, nil
+}
+
+func (r ContactRepositoryDb) GetContactNumbers(cId string) ([]Number, *errs.AppError) {
+	numbers := make([]Number, 0)
+
+	selectNumbersSql := `SELECT * FROM numbers WHERE contact_id = ?`
+
+	rows, err := r.client.Query(selectNumbersSql, cId)
+	if err != nil {
+		logger.Error("Error while selecting numbers associated with specific contact: " + err.Error())
+		return nil, errs.NewUnexpectedErr("Unexpected database error")
+	}
+
+	for rows.Next() {
+		var n Number
+		err = rows.Scan(&n.Id, &n.ContactId, &n.PhoneNumber, &n.Label)
+		if err != nil {
+			logger.Error("Error while scanning retrieved set of numbers: " + err.Error())
+			return nil, errs.NewUnexpectedErr("Unexpected database error")
+		}
+		numbers = append(numbers, n)
+	}
+
+	return numbers, nil
+
+}
+
+func (r ContactRepositoryDb) GetContactEmails(cId string) ([]Email, *errs.AppError) {
+	emails := make([]Email, 0)
+
+	selectEmailsSql := `SELECT * FROM emails WHERE contact_id = ?`
+	rows, err := r.client.Query(selectEmailsSql, cId)
+	if err != nil {
+		logger.Error("Error while selecting emails associated with specific contact: " + err.Error())
+		return nil, errs.NewUnexpectedErr("Unexpected database error")
+	}
+
+	for rows.Next() {
+		var e Email
+		err = rows.Scan(&e.Id, &e.ContactId, &e.Address)
+		if err != nil {
+			logger.Error("Error while scanning retrieved set of emails: " + err.Error())
+			return nil, errs.NewUnexpectedErr("Unexpected database error")
+		}
+		emails = append(emails, e)
+	}
+
+	return emails, nil
 }

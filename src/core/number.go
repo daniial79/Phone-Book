@@ -4,10 +4,6 @@ import (
 	"github.com/daniial79/Phone-Book/src/dto"
 )
 
-// NumberRepository Number secondary port
-type NumberRepository interface {
-}
-
 // Number core object definition
 type Number struct {
 	Id          string `db:"id"`

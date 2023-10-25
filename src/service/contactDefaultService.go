@@ -11,8 +11,8 @@ type ContactDefaultService struct {
 	repo core.ContactRepository
 }
 
-func NewContactDefaultService(repository core.ContactRepository) ContactDefaultService {
-	return ContactDefaultService{repo: repository}
+func NewContactDefaultService(repo core.ContactRepositoryDb) ContactDefaultService {
+	return ContactDefaultService{repo}
 }
 
 func (s ContactDefaultService) NewContact(request dto.NewContactRequest) (*dto.NewContactResponse, *errs.AppError) {

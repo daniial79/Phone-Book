@@ -2,14 +2,7 @@ package core
 
 import (
 	"github.com/daniial79/Phone-Book/src/dto"
-	"github.com/daniial79/Phone-Book/src/errs"
 )
-
-// EmailRepository secondary port
-type EmailRepository interface {
-	CheckContactExistenceById(string) *errs.AppError
-	AddNewEmails([]Email) ([]Email, *errs.AppError)
-}
 
 // Email core object definition
 type Email struct {

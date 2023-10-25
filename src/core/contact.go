@@ -12,6 +12,8 @@ type ContactRepository interface {
 	AddNewNumber(n []Number) ([]Number, *errs.AppError)
 	AddNewEmails(e []Email) ([]Email, *errs.AppError)
 	GetAllContacts() ([]Contact, *errs.AppError)
+	GetContactNumbers(cId string) ([]Number, *errs.AppError)
+	GetContactEmails(cId string) ([]Email, *errs.AppError)
 }
 
 // Contact contact core object definition
