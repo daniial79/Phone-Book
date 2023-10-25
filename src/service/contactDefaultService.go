@@ -114,3 +114,37 @@ func (s ContactDefaultService) GetContacts() ([]dto.NewContactResponse, *errs.Ap
 
 	return response, nil
 }
+
+func (s ContactDefaultService) GetContactCredentials(cId string) (*dto.ContactCredentialsResponse, *errs.AppError) {
+	coreTypedNumbers, err := s.repo.GetContactNumbers(cId)
+	if err != nil {
+		return nil, err
+	}
+
+	coreTypedEmails, err := s.repo.GetContactEmails(cId)
+	if err != nil {
+		return nil, err
+	}
+
+	phoneNumberResponse := make([]dto.PhoneNumberResponse, 0)
+	emailResponse := make([]dto.EmailResponse, 0)
+
+	for _, n := range coreTypedNumbers {
+		phoneNumberResponse = append(phoneNumberResponse,
+			n.ToPhoneNumberResponseDto(),
+		)
+	}
+
+	for _, e := range coreTypedEmails {
+		emailResponse = append(emailResponse,
+			e.ToEmailResponseDto(),
+		)
+	}
+
+	response := dto.ContactCredentialsResponse{
+		PhoneNumbers: phoneNumberResponse,
+		Emails:       emailResponse,
+	}
+
+	return &response, nil
+}

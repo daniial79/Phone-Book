@@ -19,3 +19,7 @@ func (n Number) ToAddNumberResponseDto() dto.AddNumberResponse {
 		Label:  n.Label,
 	}
 }
+
+func (n Number) ToPhoneNumberResponseDto() dto.PhoneNumberResponse {
+	return dto.PhoneNumberResponse(n)
+}

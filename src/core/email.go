@@ -17,3 +17,7 @@ func (e Email) ToAddEmailResponseDto() dto.AddEmailResponse {
 		Address: e.Address,
 	}
 }
+
+func (e Email) ToEmailResponseDto() dto.EmailResponse {
+	return dto.EmailResponse(e)
+}

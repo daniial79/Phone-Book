@@ -11,4 +11,5 @@ type ContactService interface {
 	AddNewNumbers(request []dto.AddNumberRequest, contactId string) ([]dto.AddNumberResponse, *errs.AppError)
 	AddNewEmails(request []dto.AddEmailRequest, contactId string) ([]dto.AddEmailResponse, *errs.AppError)
 	GetContacts() ([]dto.NewContactResponse, *errs.AppError)
+	GetContactCredentials(cId string) (*dto.ContactCredentialsResponse, *errs.AppError)
 }
