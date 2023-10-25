@@ -34,10 +34,10 @@ func (c Contact) ToContactResponseDto() *dto.NewContactResponse {
 
 	for _, number := range c.PhoneNumbers {
 		response.PhoneNumbers = append(response.PhoneNumbers, dto.PhoneNumberResponse{
-			Id:        number.Id,
-			ContactId: number.ContactId,
-			Number:    number.PhoneNumber,
-			Label:     number.Label,
+			Id:          number.Id,
+			ContactId:   number.ContactId,
+			PhoneNumber: number.PhoneNumber,
+			Label:       number.Label,
 		})
 	}
 

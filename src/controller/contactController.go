@@ -78,3 +78,13 @@ func (c ContactController) GetContacts(ctx echo.Context) error {
 
 	return ctx.JSONPretty(http.StatusOK, response, "  ")
 }
+
+func (c ContactController) GetContactCredentials(ctx echo.Context) error {
+	contactId := ctx.Param("contactId")
+	response, appErr := c.service.GetContactCredentials(contactId)
+	if appErr != nil {
+		return ctx.JSONPretty(appErr.StatusCode, appErr, "  ")
+	}
+
+	return ctx.JSONPretty(http.StatusOK, response, " ")
+}

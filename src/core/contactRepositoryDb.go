@@ -208,10 +208,13 @@ func (r ContactRepositoryDb) GetAllContacts() ([]Contact, *errs.AppError) {
 func (r ContactRepositoryDb) GetContactNumbers(cId string) ([]Number, *errs.AppError) {
 	numbers := make([]Number, 0)
 
-	selectNumbersSql := `SELECT * FROM numbers WHERE contact_id = ?`
+	selectNumbersSql := `SELECT * FROM numbers WHERE contact_id = $1`
 
 	rows, err := r.client.Query(selectNumbersSql, cId)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errs.NewNotFoundErr("no number associated with this contact id")
+		}
 		logger.Error("Error while selecting numbers associated with specific contact: " + err.Error())
 		return nil, errs.NewUnexpectedErr("Unexpected database error")
 	}
@@ -233,9 +236,12 @@ func (r ContactRepositoryDb) GetContactNumbers(cId string) ([]Number, *errs.AppE
 func (r ContactRepositoryDb) GetContactEmails(cId string) ([]Email, *errs.AppError) {
 	emails := make([]Email, 0)
 
-	selectEmailsSql := `SELECT * FROM emails WHERE contact_id = ?`
+	selectEmailsSql := `SELECT * FROM emails WHERE contact_id = $1`
 	rows, err := r.client.Query(selectEmailsSql, cId)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errs.NewNotFoundErr("no email associated with this contact id")
+		}
 		logger.Error("Error while selecting emails associated with specific contact: " + err.Error())
 		return nil, errs.NewUnexpectedErr("Unexpected database error")
 	}
