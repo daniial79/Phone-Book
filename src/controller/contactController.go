@@ -82,7 +82,7 @@ func (c ContactController) GetContactCredentials(ctx echo.Context) error {
 	contactId := ctx.Param("contactId")
 	response, appErr := c.service.GetContactCredentials(contactId)
 	if appErr != nil {
-		return ctx.JSONPretty(appErr.StatusCode, appErr, "  ")
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
 
 	return ctx.JSONPretty(http.StatusOK, response, " ")
@@ -94,9 +94,20 @@ func (c ContactController) DeleteEmailFromContact(ctx echo.Context) error {
 
 	response, appErr := c.service.DeleteEmailFromContact(contactId, emailId)
 	if appErr != nil {
-		return ctx.JSONPretty(appErr.StatusCode, appErr, "  ")
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
 
 	return ctx.JSON(http.StatusNoContent, response)
+}
 
+func (c ContactController) DeletePhoneNumberFromContact(ctx echo.Context) error {
+	contactId := ctx.Param("contactId")
+	phoneNumberId := ctx.Param("phoneNumberId")
+
+	response, appErr := c.service.DeletePhoneNumberFromContact(contactId, phoneNumberId)
+	if appErr != nil {
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+	}
+
+	return ctx.JSON(http.StatusNoContent, response)
 }

@@ -15,6 +15,7 @@ type ContactRepository interface {
 	GetContactNumbers(cId string) ([]Number, *errs.AppError)
 	GetContactEmails(cId string) ([]Email, *errs.AppError)
 	DeleteContactEmail(cId, eId string) *errs.AppError
+	DeleteContactPhoneNumber(cId, nId string) *errs.AppError
 }
 
 // Contact contact core object definition

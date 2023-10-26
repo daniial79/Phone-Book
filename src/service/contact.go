@@ -13,4 +13,5 @@ type ContactService interface {
 	GetContacts() ([]dto.NewContactResponse, *errs.AppError)
 	GetContactCredentials(cId string) (*dto.ContactCredentialsResponse, *errs.AppError)
 	DeleteEmailFromContact(cId, eId string) (*dto.NoContentResponse, *errs.AppError)
+	DeletePhoneNumberFromContact(cId, eId string) (*dto.NoContentResponse, *errs.AppError)
 }

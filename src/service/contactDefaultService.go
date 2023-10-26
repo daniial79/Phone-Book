@@ -150,9 +150,17 @@ func (s ContactDefaultService) GetContactCredentials(cId string) (*dto.ContactCr
 }
 
 func (s ContactDefaultService) DeleteEmailFromContact(cId, eId string) (*dto.NoContentResponse, *errs.AppError) {
-	err := s.repo.DeleteContactEmail(cId, eId)
+	if err := s.repo.DeleteContactEmail(cId, eId); err != nil {
+		return nil, err
+	}
 
-	if err != nil {
+	response := dto.NoContentResponse{}
+
+	return &response, nil
+}
+
+func (s ContactDefaultService) DeletePhoneNumberFromContact(cId, eId string) (*dto.NoContentResponse, *errs.AppError) {
+	if err := s.repo.DeleteContactPhoneNumber(cId, eId); err != nil {
 		return nil, err
 	}
 

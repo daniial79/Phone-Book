@@ -276,3 +276,21 @@ func (r ContactRepositoryDb) DeleteContactEmail(cId, eId string) *errs.AppError 
 
 	return nil
 }
+
+func (r ContactRepositoryDb) DeleteContactPhoneNumber(cId, nId string) *errs.AppError {
+	deleteQuery := `DELETE FROM numbers WHERE id = $1 AND contact_id = $2 RETURNING id`
+
+	row := r.client.QueryRow(deleteQuery, nId, cId)
+	var deletedNumberId int
+
+	err := row.Scan(&deletedNumberId)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return errs.NewNotFoundErr("phone number not found")
+		}
+		return errs.NewUnexpectedErr("Unexpected database error")
+	}
+
+	return nil
+
+}
