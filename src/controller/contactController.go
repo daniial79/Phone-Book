@@ -14,7 +14,6 @@ type ContactController struct {
 
 func NewContactController(
 	s service.ContactService,
-
 ) ContactController {
 	return ContactController{service: s}
 }
@@ -87,4 +86,17 @@ func (c ContactController) GetContactCredentials(ctx echo.Context) error {
 	}
 
 	return ctx.JSONPretty(http.StatusOK, response, " ")
+}
+
+func (c ContactController) DeleteEmailFromContact(ctx echo.Context) error {
+	contactId := ctx.Param("contactId")
+	emailId := ctx.Param("emailId")
+
+	response, appErr := c.service.DeleteEmailFromContact(contactId, emailId)
+	if appErr != nil {
+		return ctx.JSONPretty(appErr.StatusCode, appErr, "  ")
+	}
+
+	return ctx.JSON(http.StatusNoContent, response)
+
 }

@@ -12,4 +12,5 @@ type ContactService interface {
 	AddNewEmails(request []dto.AddEmailRequest, contactId string) ([]dto.AddEmailResponse, *errs.AppError)
 	GetContacts() ([]dto.NewContactResponse, *errs.AppError)
 	GetContactCredentials(cId string) (*dto.ContactCredentialsResponse, *errs.AppError)
+	DeleteEmailFromContact(cId, eId string) (*dto.NoContentResponse, *errs.AppError)
 }

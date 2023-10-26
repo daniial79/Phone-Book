@@ -258,3 +258,21 @@ func (r ContactRepositoryDb) GetContactEmails(cId string) ([]Email, *errs.AppErr
 
 	return emails, nil
 }
+
+func (r ContactRepositoryDb) DeleteContactEmail(cId, eId string) *errs.AppError {
+	deleteQuery := `DELETE FROM emails WHERE id = $1 AND contact_id = $2 RETURNING id`
+
+	row := r.client.QueryRow(deleteQuery, eId, cId)
+	var deletedEmailId int
+
+	err := row.Scan(&deletedEmailId)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return errs.NewNotFoundErr("email not found")
+		}
+		logger.Error("Error while removing a record from emails table: " + err.Error())
+		return errs.NewUnexpectedErr("Unexpected database error")
+	}
+
+	return nil
+}

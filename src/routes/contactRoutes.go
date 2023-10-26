@@ -20,4 +20,6 @@ func SetContactRoutes(r *echo.Echo, db *sql.DB) {
 
 	r.GET("/contacts", contactController.GetContacts)
 	r.GET("/contacts/:contactId", contactController.GetContactCredentials)
+
+	r.DELETE("/contacts/:contactId/emails/:emailId", contactController.DeleteEmailFromContact)
 }
