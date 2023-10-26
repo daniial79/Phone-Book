@@ -292,5 +292,57 @@ func (r ContactRepositoryDb) DeleteContactPhoneNumber(cId, nId string) *errs.App
 	}
 
 	return nil
+}
 
+func (r ContactRepositoryDb) DeleteContact(cId string) *errs.AppError {
+	tx, err := r.client.Begin()
+	if err != nil {
+		logger.Error("Error while starting new transaction for cascading deletion of contact: " + err.Error())
+		return errs.NewUnexpectedErr("Unexpected database error")
+	}
+
+	pnDeleteQuery := `DELETE FROM numbers WHERE contact_id = $1`
+	_, err = tx.Exec(pnDeleteQuery, cId)
+
+	if err != nil {
+		logger.Error("Error while removing corresponding phone numbers with contact from numbers table: " + err.Error())
+		txErr := tx.Rollback()
+		if txErr != nil {
+			logger.Error("Error while rollback from cascading deletion on numbers table:" + txErr.Error())
+			return errs.NewUnexpectedErr("Unexpected database error")
+		}
+	}
+
+	eDeleteQuery := `DELETE FROM emails WHERE contact_id = $1`
+	_, err = tx.Exec(eDeleteQuery, cId)
+
+	if err != nil {
+		logger.Error("Error while removing corresponding emails with contact from emails table: " + err.Error())
+		txErr := tx.Rollback()
+		if txErr != nil {
+			logger.Error("Error while rollback from cascading deletion on emails table:" + txErr.Error())
+			return errs.NewUnexpectedErr("Unexpected database error")
+		}
+	}
+
+	cDeleteQuery := `DELETE FROM contacts WHERE id = $1 RETURNING id`
+	row := tx.QueryRow(cDeleteQuery, cId)
+	var deletedContactId int
+
+	if err = row.Scan(&deletedContactId); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return errs.NewNotFoundErr("contact not found")
+		}
+
+		if txErr := tx.Rollback(); txErr != nil {
+			logger.Error("Error while rollback from deleting record from contacts table:" + txErr.Error())
+			return errs.NewUnexpectedErr("Unexpected database error")
+		}
+	}
+
+	if txErr := tx.Commit(); txErr != nil {
+		logger.Error("Error while committing the started transaction inside contact deletion")
+	}
+
+	return nil
 }

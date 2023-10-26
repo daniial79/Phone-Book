@@ -23,4 +23,5 @@ func SetContactRoutes(r *echo.Echo, db *sql.DB) {
 
 	r.DELETE("/contacts/:contactId/emails/:emailId", contactController.DeleteEmailFromContact)
 	r.DELETE("/contacts/:contactId/emails/:phoneNumberId", contactController.DeletePhoneNumberFromContact)
+	r.DELETE("/contacts/:contactId", contactController.DeleteContact)
 }

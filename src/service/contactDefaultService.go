@@ -168,3 +168,12 @@ func (s ContactDefaultService) DeletePhoneNumberFromContact(cId, eId string) (*d
 
 	return &response, nil
 }
+
+func (s ContactDefaultService) DeleteContact(cId string) (*dto.NoContentResponse, *errs.AppError) {
+	if err := s.repo.DeleteContact(cId); err != nil {
+		return nil, err
+	}
+	response := dto.NoContentResponse{}
+
+	return &response, nil
+}

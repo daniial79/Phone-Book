@@ -111,3 +111,14 @@ func (c ContactController) DeletePhoneNumberFromContact(ctx echo.Context) error 
 
 	return ctx.JSON(http.StatusNoContent, response)
 }
+
+func (c ContactController) DeleteContact(ctx echo.Context) error {
+	contactId := ctx.Param("contactId")
+
+	response, appErr := c.service.DeleteContact(contactId)
+	if appErr != nil {
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+	}
+
+	return ctx.JSON(http.StatusNoContent, response)
+}
