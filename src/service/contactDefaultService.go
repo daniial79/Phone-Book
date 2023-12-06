@@ -177,3 +177,21 @@ func (s ContactDefaultService) DeleteContact(cId string) (*dto.NoContentResponse
 
 	return &response, nil
 }
+
+func (s ContactDefaultService) UpdateContactNumber(cId, nId string, request dto.UpdateContactNumberRequest) (*dto.UpdateContactNumberResponse, *errs.AppError) {
+	coreTypedNumber := core.Number{
+		Id:          nId,
+		ContactId:   cId,
+		PhoneNumber: request.NewPhoneNumber,
+		Label:       request.NewLabel,
+	}
+
+	updatedCoreTypedNumber, err := s.repo.UpdateContactPhoneNumber(coreTypedNumber)
+	if err != nil {
+		return nil, err
+	}
+
+	response := updatedCoreTypedNumber.ToUpdatedNumberResponseDto()
+
+	return &response, nil
+}

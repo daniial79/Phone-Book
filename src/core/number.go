@@ -23,3 +23,10 @@ func (n Number) ToAddNumberResponseDto() dto.AddNumberResponse {
 func (n Number) ToPhoneNumberResponseDto() dto.PhoneNumberResponse {
 	return dto.PhoneNumberResponse(n)
 }
+
+func (n Number) ToUpdatedNumberResponseDto() dto.UpdateContactNumberResponse {
+	return dto.UpdateContactNumberResponse{
+		UpdatedPhoneNumber: n.PhoneNumber,
+		UpdateLabel:        n.Label,
+	}
+}

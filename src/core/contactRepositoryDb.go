@@ -3,6 +3,7 @@ package core
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/daniial79/Phone-Book/src/errs"
 	"github.com/daniial79/Phone-Book/src/logger"
 	"strconv"
@@ -345,4 +346,35 @@ func (r ContactRepositoryDb) DeleteContact(cId string) *errs.AppError {
 	}
 
 	return nil
+}
+
+func (r ContactRepositoryDb) UpdateContactPhoneNumber(newNumber Number) (*Number, *errs.AppError) {
+	numberId := newNumber.Id
+	contactId := newNumber.ContactId
+	newPhoneNumber := newNumber.PhoneNumber
+	newLabel := newNumber.Label
+
+	var row *sql.Row
+	if newPhoneNumber != "" && newLabel != "" {
+		fmt.Println("both")
+		updateQuery := `UPDATE numbers SET number = $1, label = $2 WHERE id = $3 AND contact_id = $4 RETURNING id`
+		row = r.client.QueryRow(updateQuery, newPhoneNumber, newLabel, numberId, contactId)
+	} else if newPhoneNumber == "" && newLabel != "" {
+		fmt.Println("label")
+		updateQuery := `UPDATE numbers SET label = $1 WHERE id = $2 AND contact_id = $3 RETURNING id`
+		row = r.client.QueryRow(updateQuery, newLabel, numberId, contactId)
+	} else if newPhoneNumber != "" && newLabel == "" {
+		fmt.Println("number")
+		updateQuery := `UPDATE numbers SET number = $1 WHERE id = $2 AND contact_id = $3 RETURNING id`
+		row = r.client.QueryRow(updateQuery, newPhoneNumber, numberId, contactId)
+	}
+
+	var retrievedId int
+	err := row.Scan(&retrievedId)
+	if err != nil {
+		logger.Error("Error while updating record in numbers table")
+		return nil, errs.NewUnexpectedErr("Unexpected database error")
+	}
+
+	return &newNumber, nil
 }
