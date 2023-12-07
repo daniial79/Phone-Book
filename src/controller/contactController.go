@@ -156,3 +156,20 @@ func (c ContactController) UpdateEmail(ctx echo.Context) error {
 
 	return ctx.JSONPretty(http.StatusOK, response, " ")
 }
+
+func (c ContactController) UpdateContact(ctx echo.Context) error {
+	contactId := ctx.Param("contactId")
+
+	var request dto.UpdateContactRequest
+	if err := ctx.Bind(&request); err != nil {
+		appErr := errs.NewUnProcessableErr(err.Error())
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), " ")
+	}
+
+	response, appErr := c.service.UpdateContact(contactId, request)
+	if appErr != nil {
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), " ")
+	}
+
+	return ctx.JSONPretty(http.StatusOK, response, " ")
+}

@@ -211,3 +211,19 @@ func (s ContactDefaultService) UpdateContactEmail(cId, eId string, request dto.U
 	response := updatedCoreTypedEmail.ToUpdatedEmailResponseDto()
 	return &response, nil
 }
+
+func (s ContactDefaultService) UpdateContact(cId string, request dto.UpdateContactRequest) (*dto.UpdateContactResponse, *errs.AppError) {
+	coreTypedContact := core.Contact{
+		Id:        cId,
+		FirstName: request.NewFirstName,
+		LastName:  request.NewLastName,
+	}
+
+	updatedContactCoredType, err := s.repo.UpdateContact(coreTypedContact)
+	if err != nil {
+		return nil, err
+	}
+
+	response := updatedContactCoredType.ToUpdatedContactResponseDto()
+	return &response, nil
+}

@@ -405,3 +405,35 @@ func (r ContactRepositoryDb) UpdateContactEmail(newEmail Email) (*Email, *errs.A
 
 	return &newEmail, nil
 }
+
+func (r ContactRepositoryDb) UpdateContact(newContact Contact) (*Contact, *errs.AppError) {
+	contactId := newContact.Id
+	newFirstname := newContact.FirstName
+	newLastname := newContact.LastName
+
+	if appErr := r.CheckContactExistenceById(contactId); appErr != nil {
+		return nil, appErr
+	}
+
+	var row *sql.Row
+	if newFirstname != "" && newLastname != "" {
+		updateQuery := `UPDATE contacts SET first_name = $1, last_name = $2 WHERE id = $3 RETURNING id`
+		row = r.client.QueryRow(updateQuery, newFirstname, newLastname, contactId)
+	} else if newFirstname != "" && newLastname == "" {
+		updateQuery := `UPDATE contacts SET first_name = $1 WHERE id = $2 RETURNING id`
+		row = r.client.QueryRow(updateQuery, newFirstname, contactId)
+	} else if newFirstname == "" && newLastname != "" {
+		updateQuery := `UPDATE contacts SET last_name = $1 WHERE id = $2 RETURNING id`
+		row = r.client.QueryRow(updateQuery, newLastname, contactId)
+	}
+
+	var retrievedId int
+	err := row.Scan(&retrievedId)
+	if err != nil {
+		//at this stage, we would not face empty record as result
+		logger.Error("Error while updating record in contact tables: " + err.Error())
+		return nil, errs.NewUnexpectedErr("Unexpected database error")
+	}
+
+	return &newContact, nil
+}

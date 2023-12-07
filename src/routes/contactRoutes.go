@@ -27,4 +27,5 @@ func SetContactRoutes(r *echo.Echo, db *sql.DB) {
 
 	r.PATCH("/contacts/:contactId/emails/:phoneNumberId", contactController.UpdatePhoneNumber)
 	r.PATCH("/contacts/:contactId/emails/:emailId", contactController.UpdateEmail)
+	r.PATCH("/contacts/:contactId", contactController.UpdateContact)
 }

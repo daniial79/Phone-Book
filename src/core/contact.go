@@ -19,6 +19,7 @@ type ContactRepository interface {
 	DeleteContact(cId string) *errs.AppError
 	UpdateContactPhoneNumber(newNumber Number) (*Number, *errs.AppError)
 	UpdateContactEmail(newEmail Email) (*Email, *errs.AppError)
+	UpdateContact(newContact Contact) (*Contact, *errs.AppError)
 }
 
 // Contact contact core object definition
@@ -55,4 +56,11 @@ func (c Contact) ToContactResponseDto() *dto.NewContactResponse {
 	}
 
 	return response
+}
+
+func (c Contact) ToUpdatedContactResponseDto() dto.UpdateContactResponse {
+	return dto.UpdateContactResponse{
+		UpdatedFirstName: c.FirstName,
+		UpdatedLastName:  c.LastName,
+	}
 }
