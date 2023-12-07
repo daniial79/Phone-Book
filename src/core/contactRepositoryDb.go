@@ -354,6 +354,10 @@ func (r ContactRepositoryDb) UpdateContactPhoneNumber(newNumber Number) (*Number
 	newPhoneNumber := newNumber.PhoneNumber
 	newLabel := newNumber.Label
 
+	if appErr := r.CheckContactExistenceById(contactId); appErr != nil {
+		return nil, appErr
+	}
+
 	var row *sql.Row
 	if newPhoneNumber != "" && newLabel != "" {
 		fmt.Println("both")
@@ -372,6 +376,9 @@ func (r ContactRepositoryDb) UpdateContactPhoneNumber(newNumber Number) (*Number
 	var retrievedId int
 	err := row.Scan(&retrievedId)
 	if err != nil {
+		if errors.Is(sql.ErrNoRows, err) {
+			return nil, errs.NewNotFoundErr("phone number with this id not found")
+		}
 		logger.Error("Error while updating record in numbers table")
 		return nil, errs.NewUnexpectedErr("Unexpected database error")
 	}
