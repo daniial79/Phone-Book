@@ -178,7 +178,7 @@ func (s ContactDefaultService) DeleteContact(cId string) (*dto.NoContentResponse
 	return &response, nil
 }
 
-func (s ContactDefaultService) UpdateContactNumber(cId, nId string, request dto.UpdateContactNumberRequest) (*dto.UpdateContactNumberResponse, *errs.AppError) {
+func (s ContactDefaultService) UpdateContactNumber(cId, nId string, request dto.UpdateNumberRequest) (*dto.UpdateNumberResponse, *errs.AppError) {
 	coreTypedNumber := core.Number{
 		Id:          nId,
 		ContactId:   cId,
@@ -193,5 +193,21 @@ func (s ContactDefaultService) UpdateContactNumber(cId, nId string, request dto.
 
 	response := updatedCoreTypedNumber.ToUpdatedNumberResponseDto()
 
+	return &response, nil
+}
+
+func (s ContactDefaultService) UpdateContactEmail(cId, eId string, request dto.UpdateEmailRequest) (*dto.UpdateEmailResponse, *errs.AppError) {
+	coreTypedEmail := core.Email{
+		Id:        eId,
+		ContactId: cId,
+		Address:   request.NewAddress,
+	}
+
+	updatedCoreTypedEmail, err := s.repo.UpdateContactEmail(coreTypedEmail)
+	if err != nil {
+		return nil, err
+	}
+
+	response := updatedCoreTypedEmail.ToUpdatedEmailResponseDto()
 	return &response, nil
 }

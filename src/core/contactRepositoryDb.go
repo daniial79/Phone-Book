@@ -3,7 +3,6 @@ package core
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"github.com/daniial79/Phone-Book/src/errs"
 	"github.com/daniial79/Phone-Book/src/logger"
 	"strconv"
@@ -360,15 +359,12 @@ func (r ContactRepositoryDb) UpdateContactPhoneNumber(newNumber Number) (*Number
 
 	var row *sql.Row
 	if newPhoneNumber != "" && newLabel != "" {
-		fmt.Println("both")
 		updateQuery := `UPDATE numbers SET number = $1, label = $2 WHERE id = $3 AND contact_id = $4 RETURNING id`
 		row = r.client.QueryRow(updateQuery, newPhoneNumber, newLabel, numberId, contactId)
 	} else if newPhoneNumber == "" && newLabel != "" {
-		fmt.Println("label")
 		updateQuery := `UPDATE numbers SET label = $1 WHERE id = $2 AND contact_id = $3 RETURNING id`
 		row = r.client.QueryRow(updateQuery, newLabel, numberId, contactId)
 	} else if newPhoneNumber != "" && newLabel == "" {
-		fmt.Println("number")
 		updateQuery := `UPDATE numbers SET number = $1 WHERE id = $2 AND contact_id = $3 RETURNING id`
 		row = r.client.QueryRow(updateQuery, newPhoneNumber, numberId, contactId)
 	}
@@ -379,9 +375,33 @@ func (r ContactRepositoryDb) UpdateContactPhoneNumber(newNumber Number) (*Number
 		if errors.Is(sql.ErrNoRows, err) {
 			return nil, errs.NewNotFoundErr("phone number with this id not found")
 		}
-		logger.Error("Error while updating record in numbers table")
+		logger.Error("Error while updating record in numbers table: " + err.Error())
 		return nil, errs.NewUnexpectedErr("Unexpected database error")
 	}
 
 	return &newNumber, nil
+}
+
+func (r ContactRepositoryDb) UpdateContactEmail(newEmail Email) (*Email, *errs.AppError) {
+	emailId := newEmail.Id
+	contactId := newEmail.ContactId
+	newAddress := newEmail.Address
+
+	if appErr := r.CheckContactExistenceById(contactId); appErr != nil {
+		return nil, appErr
+	}
+
+	updateQuery := `UPDATE emails SET address = $1 WHERE id = $2 AND contact_id = $3 RETURNING id`
+	row := r.client.QueryRow(updateQuery, newAddress, emailId, contactId)
+	var retrievedId int
+	err := row.Scan(&retrievedId)
+	if err != nil {
+		if errors.Is(sql.ErrNoRows, err) {
+			return nil, errs.NewNotFoundErr("email with this id not found")
+		}
+		logger.Error("Error while updating record in emails table: " + err.Error())
+		return nil, errs.NewUnexpectedErr("Unexpected database error")
+	}
+
+	return &newEmail, nil
 }

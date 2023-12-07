@@ -18,6 +18,7 @@ type ContactRepository interface {
 	DeleteContactPhoneNumber(cId, nId string) *errs.AppError
 	DeleteContact(cId string) *errs.AppError
 	UpdateContactPhoneNumber(newNumber Number) (*Number, *errs.AppError)
+	UpdateContactEmail(newEmail Email) (*Email, *errs.AppError)
 }
 
 // Contact contact core object definition

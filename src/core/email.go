@@ -21,3 +21,9 @@ func (e Email) ToAddEmailResponseDto() dto.AddEmailResponse {
 func (e Email) ToEmailResponseDto() dto.EmailResponse {
 	return dto.EmailResponse(e)
 }
+
+func (e Email) ToUpdatedEmailResponseDto() dto.UpdateEmailResponse {
+	return dto.UpdateEmailResponse{
+		UpdatedAddress: e.Address,
+	}
+}

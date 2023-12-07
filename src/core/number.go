@@ -24,8 +24,8 @@ func (n Number) ToPhoneNumberResponseDto() dto.PhoneNumberResponse {
 	return dto.PhoneNumberResponse(n)
 }
 
-func (n Number) ToUpdatedNumberResponseDto() dto.UpdateContactNumberResponse {
-	return dto.UpdateContactNumberResponse{
+func (n Number) ToUpdatedNumberResponseDto() dto.UpdateNumberResponse {
+	return dto.UpdateNumberResponse{
 		UpdatedPhoneNumber: n.PhoneNumber,
 		UpdateLabel:        n.Label,
 	}

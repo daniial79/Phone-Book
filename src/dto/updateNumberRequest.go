@@ -1,6 +1,6 @@
 package dto
 
-type UpdateContactNumberRequest struct {
+type UpdateNumberRequest struct {
 	NewPhoneNumber string `json:"newPhoneNumber,omitempty"`
 	NewLabel       string `json:"newLabel,omitempty"`
 }
