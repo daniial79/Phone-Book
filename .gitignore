@@ -2,14 +2,11 @@
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
 #
 # Binaries for programs and plugins
-main
-*.env
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
-.idea/**
 
 # Test binary, built with `go test -c`
 *.test
@@ -22,5 +19,3 @@ main
 
 # Go workspace file
 go.work
-
-#environment variables
