@@ -212,17 +212,17 @@ func (s ContactDefaultService) UpdateContactEmail(cId, eId string, request dto.U
 	return &response, nil
 }
 
-func (s ContactDefaultService) UpdateContact(cId string, request dto.UpdateContactRequest) (*dto.UpdateContactResponse, *errs.AppError) {
+func (s ContactDefaultService) UpdateContact(cId string, requestBody dto.UpdateContactRequest) (*dto.UpdateContactResponse, *errs.AppError) {
 
-	if !request.IsValid() {
+	if !requestBody.IsValid() {
 		appErr := errs.NewUnProcessableErr("Unprocessable request")
 		return nil, appErr
 	}
 
 	coreTypedContact := core.Contact{
 		Id:        cId,
-		FirstName: request.NewFirstName,
-		LastName:  request.NewLastName,
+		FirstName: requestBody.NewFirstName,
+		LastName:  requestBody.NewLastName,
 	}
 
 	updatedContactCoredType, err := s.repo.UpdateContact(coreTypedContact)

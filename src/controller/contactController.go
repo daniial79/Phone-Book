@@ -160,13 +160,13 @@ func (c ContactController) UpdateEmail(ctx echo.Context) error {
 func (c ContactController) UpdateContact(ctx echo.Context) error {
 	contactId := ctx.Param("contactId")
 
-	var request dto.UpdateContactRequest
-	if err := ctx.Bind(&request); err != nil {
+	var requestBody dto.UpdateContactRequest
+	if err := ctx.Bind(&requestBody); err != nil {
 		appErr := errs.NewUnProcessableErr(err.Error())
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), " ")
 	}
 
-	response, appErr := c.service.UpdateContact(contactId, request)
+	response, appErr := c.service.UpdateContact(contactId, requestBody)
 	if appErr != nil {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), " ")
 	}
