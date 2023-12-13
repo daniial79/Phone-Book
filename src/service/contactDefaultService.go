@@ -48,10 +48,16 @@ func (s ContactDefaultService) NewContact(request dto.NewContactRequest) (*dto.N
 	return response, nil
 }
 
-func (s ContactDefaultService) AddNewNumbers(request []dto.AddNumberRequest, contactId string) ([]dto.AddNumberResponse, *errs.AppError) {
-	coreTypedNumbers := make([]core.Number, len(request))
+func (s ContactDefaultService) AddNewNumbers(requestBody []dto.AddNumberRequest, contactId string) ([]dto.AddNumberResponse, *errs.AppError) {
+	for _, r := range requestBody {
+		if !r.IsValid() {
+			return nil, errs.NewUnProcessableErr("Unprocessable request")
+		}
+	}
 
-	for i, numberRequest := range request {
+	coreTypedNumbers := make([]core.Number, len(requestBody))
+
+	for i, numberRequest := range requestBody {
 		coreTypedNumbers[i] = core.Number{
 			Id:          "",
 			ContactId:   contactId,

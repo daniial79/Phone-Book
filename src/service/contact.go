@@ -8,7 +8,7 @@ import (
 // ContactService Primary port
 type ContactService interface {
 	NewContact(request dto.NewContactRequest) (*dto.NewContactResponse, *errs.AppError)
-	AddNewNumbers(request []dto.AddNumberRequest, contactId string) ([]dto.AddNumberResponse, *errs.AppError)
+	AddNewNumbers(requestBody []dto.AddNumberRequest, contactId string) ([]dto.AddNumberResponse, *errs.AppError)
 	AddNewEmails(requestBody []dto.AddEmailRequest, contactId string) ([]dto.AddEmailResponse, *errs.AppError)
 	GetContacts() ([]dto.NewContactResponse, *errs.AppError)
 	GetContactCredentials(cId string) (*dto.ContactCredentialsResponse, *errs.AppError)
