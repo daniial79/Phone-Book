@@ -126,13 +126,13 @@ func (c ContactController) DeleteContact(ctx echo.Context) error {
 func (c ContactController) UpdatePhoneNumber(ctx echo.Context) error {
 	contactId, numberId := ctx.Param("contactId"), ctx.Param("phoneNumberId")
 
-	var request dto.UpdateNumberRequest
-	if err := ctx.Bind(&request); err != nil {
+	var requestBody dto.UpdateNumberRequest
+	if err := ctx.Bind(&requestBody); err != nil {
 		appErr := errs.NewUnProcessableErr(err.Error())
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), " ")
 	}
 
-	response, appErr := c.service.UpdateContactNumber(contactId, numberId, request)
+	response, appErr := c.service.UpdateContactNumber(contactId, numberId, requestBody)
 	if appErr != nil {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), " ")
 	}

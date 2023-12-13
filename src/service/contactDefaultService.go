@@ -178,12 +178,17 @@ func (s ContactDefaultService) DeleteContact(cId string) (*dto.NoContentResponse
 	return &response, nil
 }
 
-func (s ContactDefaultService) UpdateContactNumber(cId, nId string, request dto.UpdateNumberRequest) (*dto.UpdateNumberResponse, *errs.AppError) {
+func (s ContactDefaultService) UpdateContactNumber(cId, nId string, requestBody dto.UpdateNumberRequest) (*dto.UpdateNumberResponse, *errs.AppError) {
+
+	if !requestBody.IsValid() {
+		return nil, errs.NewUnProcessableErr("Unprocessable request")
+	}
+
 	coreTypedNumber := core.Number{
 		Id:          nId,
 		ContactId:   cId,
-		PhoneNumber: request.NewPhoneNumber,
-		Label:       request.NewLabel,
+		PhoneNumber: requestBody.NewPhoneNumber,
+		Label:       requestBody.NewLabel,
 	}
 
 	updatedCoreTypedNumber, err := s.repo.UpdateContactPhoneNumber(coreTypedNumber)
