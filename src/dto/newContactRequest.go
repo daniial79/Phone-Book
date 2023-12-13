@@ -18,3 +18,18 @@ type NewContactRequest struct {
 	PhoneNumbers []PhoneNumberRequest `json:"phoneNumbers"`
 	Emails       []EmailRequest       `json:"emails"`
 }
+
+func (r *NewContactRequest) IsValid() bool {
+	requestLiteralValue := *r
+
+	if requestLiteralValue.FirstName == "" &&
+		requestLiteralValue.LastName == "" &&
+		len(requestLiteralValue.PhoneNumbers) == 0 &&
+		len(requestLiteralValue.PhoneNumbers) == 0 {
+
+		return false
+
+	}
+
+	return true
+}

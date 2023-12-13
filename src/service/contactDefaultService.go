@@ -15,14 +15,18 @@ func NewContactDefaultService(repo core.ContactRepositoryDb) ContactDefaultServi
 	return ContactDefaultService{repo}
 }
 
-func (s ContactDefaultService) NewContact(request dto.NewContactRequest) (*dto.NewContactResponse, *errs.AppError) {
+func (s ContactDefaultService) NewContact(requestBody dto.NewContactRequest) (*dto.NewContactResponse, *errs.AppError) {
 	coreTypedObject := new(core.Contact)
 
-	coreTypedObject.Id = ""
-	coreTypedObject.FirstName = request.FirstName
-	coreTypedObject.LastName = request.LastName
+	if !requestBody.IsValid() {
+		return nil, errs.NewUnProcessableErr("Unprocessable request")
+	}
 
-	for _, number := range request.PhoneNumbers {
+	coreTypedObject.Id = ""
+	coreTypedObject.FirstName = requestBody.FirstName
+	coreTypedObject.LastName = requestBody.LastName
+
+	for _, number := range requestBody.PhoneNumbers {
 		coreTypedObject.PhoneNumbers = append(coreTypedObject.PhoneNumbers, core.Number{
 			Id:          "",
 			ContactId:   "",
@@ -31,7 +35,7 @@ func (s ContactDefaultService) NewContact(request dto.NewContactRequest) (*dto.N
 		})
 	}
 
-	for _, email := range request.Emails {
+	for _, email := range requestBody.Emails {
 		coreTypedObject.Emails = append(coreTypedObject.Emails, core.Email{
 			Id:        "",
 			ContactId: "",
