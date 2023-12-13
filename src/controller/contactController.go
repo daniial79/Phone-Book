@@ -143,13 +143,13 @@ func (c ContactController) UpdatePhoneNumber(ctx echo.Context) error {
 func (c ContactController) UpdateEmail(ctx echo.Context) error {
 	contactId, emailId := ctx.Param("contactId"), ctx.Param("emailId")
 
-	var request dto.UpdateEmailRequest
-	if err := ctx.Bind(&request); err != nil {
+	var requestBody dto.UpdateEmailRequest
+	if err := ctx.Bind(&requestBody); err != nil {
 		appErr := errs.NewUnProcessableErr(err.Error())
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), " ")
 	}
 
-	response, appErr := c.service.UpdateContactEmail(contactId, emailId, request)
+	response, appErr := c.service.UpdateContactEmail(contactId, emailId, requestBody)
 	if appErr != nil {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), " ")
 	}

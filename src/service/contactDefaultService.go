@@ -196,11 +196,16 @@ func (s ContactDefaultService) UpdateContactNumber(cId, nId string, request dto.
 	return &response, nil
 }
 
-func (s ContactDefaultService) UpdateContactEmail(cId, eId string, request dto.UpdateEmailRequest) (*dto.UpdateEmailResponse, *errs.AppError) {
+func (s ContactDefaultService) UpdateContactEmail(cId, eId string, requestBody dto.UpdateEmailRequest) (*dto.UpdateEmailResponse, *errs.AppError) {
+
+	if !requestBody.IsValid() {
+		return nil, errs.NewUnProcessableErr("Unprocessable request")
+	}
+
 	coreTypedEmail := core.Email{
 		Id:        eId,
 		ContactId: cId,
-		Address:   request.NewAddress,
+		Address:   requestBody.NewAddress,
 	}
 
 	updatedCoreTypedEmail, err := s.repo.UpdateContactEmail(coreTypedEmail)
@@ -215,8 +220,7 @@ func (s ContactDefaultService) UpdateContactEmail(cId, eId string, request dto.U
 func (s ContactDefaultService) UpdateContact(cId string, requestBody dto.UpdateContactRequest) (*dto.UpdateContactResponse, *errs.AppError) {
 
 	if !requestBody.IsValid() {
-		appErr := errs.NewUnProcessableErr("Unprocessable request")
-		return nil, appErr
+		return nil, errs.NewUnProcessableErr("Unprocessable request")
 	}
 
 	coreTypedContact := core.Contact{

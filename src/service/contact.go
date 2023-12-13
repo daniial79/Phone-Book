@@ -16,6 +16,6 @@ type ContactService interface {
 	DeletePhoneNumberFromContact(cId, eId string) (*dto.NoContentResponse, *errs.AppError)
 	DeleteContact(cId string) (*dto.NoContentResponse, *errs.AppError)
 	UpdateContactNumber(cId, nId string, request dto.UpdateNumberRequest) (*dto.UpdateNumberResponse, *errs.AppError)
-	UpdateContactEmail(cId, eId string, request dto.UpdateEmailRequest) (*dto.UpdateEmailResponse, *errs.AppError)
+	UpdateContactEmail(cId, eId string, requestBody dto.UpdateEmailRequest) (*dto.UpdateEmailResponse, *errs.AppError)
 	UpdateContact(cId string, requestBody dto.UpdateContactRequest) (*dto.UpdateContactResponse, *errs.AppError)
 }
