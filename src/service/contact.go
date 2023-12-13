@@ -9,7 +9,7 @@ import (
 type ContactService interface {
 	NewContact(request dto.NewContactRequest) (*dto.NewContactResponse, *errs.AppError)
 	AddNewNumbers(request []dto.AddNumberRequest, contactId string) ([]dto.AddNumberResponse, *errs.AppError)
-	AddNewEmails(request []dto.AddEmailRequest, contactId string) ([]dto.AddEmailResponse, *errs.AppError)
+	AddNewEmails(requestBody []dto.AddEmailRequest, contactId string) ([]dto.AddEmailResponse, *errs.AppError)
 	GetContacts() ([]dto.NewContactResponse, *errs.AppError)
 	GetContactCredentials(cId string) (*dto.ContactCredentialsResponse, *errs.AppError)
 	DeleteEmailFromContact(cId, eId string) (*dto.NoContentResponse, *errs.AppError)

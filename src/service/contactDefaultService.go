@@ -73,10 +73,16 @@ func (s ContactDefaultService) AddNewNumbers(request []dto.AddNumberRequest, con
 	return response, nil
 }
 
-func (s ContactDefaultService) AddNewEmails(request []dto.AddEmailRequest, contactId string) ([]dto.AddEmailResponse, *errs.AppError) {
-	coreTypedEmails := make([]core.Email, len(request))
+func (s ContactDefaultService) AddNewEmails(requestBody []dto.AddEmailRequest, contactId string) ([]dto.AddEmailResponse, *errs.AppError) {
+	coreTypedEmails := make([]core.Email, len(requestBody))
 
-	for i, email := range request {
+	for _, r := range requestBody {
+		if !r.IsValid() {
+			return nil, errs.NewUnProcessableErr("Unprocessable request")
+		}
+	}
+
+	for i, email := range requestBody {
 		coreTypedEmails[i] = core.Email{
 			Id:        "",
 			ContactId: contactId,

@@ -36,14 +36,14 @@ func (c ContactController) NewContact(ctx echo.Context) error {
 
 func (c ContactController) AddNewNumbers(ctx echo.Context) error {
 	contactId := ctx.Param("contactId")
-	request := make([]dto.AddNumberRequest, 0)
+	requestsBody := make([]dto.AddNumberRequest, 0)
 
-	if err := ctx.Bind(&request); err != nil {
+	if err := ctx.Bind(&requestsBody); err != nil {
 		appErr := errs.NewUnProcessableErr(err.Error())
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
 
-	response, err := c.service.AddNewNumbers(request, contactId)
+	response, err := c.service.AddNewNumbers(requestsBody, contactId)
 	if err != nil {
 		return ctx.JSONPretty(err.StatusCode, err.AsMessage(), "  ")
 	}
