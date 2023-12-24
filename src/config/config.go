@@ -25,6 +25,7 @@ func LoadConfig() {
 		dbUserName: envVarSanityCheck("DB_USERNAME"),
 		dbPassword: envVarSanityCheck("DB_PASSWORD"),
 		dbName:     envVarSanityCheck("DB_NAME"),
+		sslMode:    envVarSanityCheck("SSL_MODE"),
 	}
 	logger.Info("App config is successfully loaded")
 }
@@ -37,6 +38,7 @@ type Config struct {
 	dbUserName string
 	dbPassword string
 	dbName     string
+	sslMode    string
 }
 
 func (c Config) GetPort() string {
@@ -48,12 +50,13 @@ func (c Config) GetDatabaseDriver() string {
 }
 
 func (c Config) GetDataSourceName() string {
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		c.dbHost,
 		c.dbPort,
 		c.dbUserName,
 		c.dbPassword,
 		c.dbName,
+		c.sslMode,
 	)
 
 	return dsn
