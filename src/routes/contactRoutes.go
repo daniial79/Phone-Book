@@ -14,18 +14,20 @@ func SetContactRoutes(r *echo.Echo, db *sql.DB) {
 
 	contactController := controller.NewContactController(contactService)
 
-	r.POST("/contacts", contactController.NewContact)
-	r.POST("/contacts/:contactId/number", contactController.AddNewNumbers)
-	r.POST("/contacts/:contactId/email", contactController.AddNewEmails)
+	g := r.Group("/api/v1/contacts")
 
-	r.GET("/contacts", contactController.GetContacts)
-	r.GET("/contacts/:contactId", contactController.GetContactCredentials)
+	g.POST("/new", contactController.NewContact)
+	g.POST("/:contactId/number", contactController.AddNewNumbers)
+	g.POST("/:contactId/email", contactController.AddNewEmails)
 
-	r.DELETE("/contacts/:contactId/emails/:emailId", contactController.DeleteEmailFromContact)
-	r.DELETE("/contacts/:contactId/emails/:phoneNumberId", contactController.DeletePhoneNumberFromContact)
-	r.DELETE("/contacts/:contactId", contactController.DeleteContact)
+	g.GET("/all", contactController.GetContacts)
+	g.GET("/:contactId", contactController.GetContactCredentials)
 
-	r.PATCH("/contacts/:contactId/emails/:phoneNumberId", contactController.UpdatePhoneNumber)
-	r.PATCH("/contacts/:contactId/emails/:emailId", contactController.UpdateEmail)
-	r.PATCH("/contacts/:contactId", contactController.UpdateContact)
+	g.DELETE("/:contactId/emails/:emailId", contactController.DeleteEmailFromContact)
+	g.DELETE("/:contactId/number/:phoneNumberId", contactController.DeletePhoneNumberFromContact)
+	g.DELETE("/:contactId", contactController.DeleteContact)
+
+	g.PATCH("/:contactId/number/:phoneNumberId", contactController.UpdatePhoneNumber)
+	g.PATCH("/:contactId/emails/:emailId", contactController.UpdateEmail)
+	g.PATCH("/:contactId", contactController.UpdateContact)
 }
