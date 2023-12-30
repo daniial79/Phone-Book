@@ -1,6 +1,9 @@
+-- Adding Third-Party modules
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 -- Users table definition
 CREATE TABLE IF NOT EXISTS users (
-    id UUID,
+    id UUID DEFAULT uuid_generate_v4(),
     username VARCHAR(50),
     password VARCHAR(16),
     phone_number VARCHAR(11),
@@ -12,7 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Contacts table definition
 CREATE TABLE IF NOT EXISTS contacts (
-    id UUID,
+    id UUID DEFAULT uuid_generate_v4(),
     owner_id UUID,
     first_name VARCHAR(255),
     last_name VARCHAR(255),
@@ -23,7 +26,7 @@ CREATE TABLE IF NOT EXISTS contacts (
 
 -- Numbers table definition
 CREATE TABLE IF NOT EXISTS numbers (
-    id UUID,
+    id UUID DEFAULT uuid_generate_v4(),
     contact_id UUID,
     number VARCHAR(11),
     label VARCHAR(100),
@@ -34,7 +37,7 @@ CREATE TABLE IF NOT EXISTS numbers (
 
 -- Emails table definition
 CREATE TABLE IF NOT EXISTS emails (
-    id UUID,
+    id UUID DEFAULT uuid_generate_v4(),
     contact_id UUID,
     address varchar(200),
 
@@ -56,5 +59,6 @@ ALTER TABLE contacts ALTER COLUMN first_name SET NOT NULL;
 ALTER TABLE numbers ALTER COLUMN number SET NOT NULL;
 
 
--- Indexing contacts table
+-- Indexing tables
+CREATE INDEX ON users (username);
 CREATE INDEX ON contacts (first_name, last_name);
