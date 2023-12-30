@@ -5,3 +5,11 @@ type CreateUserRequest struct {
 	Password    string `json:"password"`
 	PhoneNumber string `json:"phone_number"`
 }
+
+func (r CreateUserRequest) IsValid() bool {
+	if len(r.Password) < 8 {
+		return false
+	}
+
+	return true
+}

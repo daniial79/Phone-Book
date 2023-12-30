@@ -15,7 +15,7 @@ func NewUserRepositoryDb(client *sql.DB) UserRepositoryDb {
 	return UserRepositoryDb{client: client}
 }
 
-func (r *UserRepositoryDb) CreateUser(u *User) (*User, *errs.AppError) {
+func (r *UserRepositoryDb) CreateUser(u User) (*User, *errs.AppError) {
 	insertSql := `INSERT INTO users(username, password, phone_number, created_at, updated_at) 
 				  VALUES ($1, $2, $3, $4, $5) RETURNING id`
 
@@ -28,5 +28,5 @@ func (r *UserRepositoryDb) CreateUser(u *User) (*User, *errs.AppError) {
 	}
 
 	u.Id = insertedId
-	return u, nil
+	return &u, nil
 }
