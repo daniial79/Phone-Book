@@ -7,7 +7,7 @@ import (
 )
 
 type UserRepository interface {
-	CreateUser(User) (User, *errs.AppError)
+	CreateUser(User) (*User, *errs.AppError)
 }
 
 type User struct {

@@ -14,6 +14,7 @@ func Start() {
 	dbClient := db.GetNewConnection()
 	e := echo.New()
 
+	routes.SetUserRoutes(e, dbClient)
 	routes.SetContactRoutes(e, dbClient)
 
 	logger.Info("Server is up and running on port 8000...")

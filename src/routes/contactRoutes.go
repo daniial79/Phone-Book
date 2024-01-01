@@ -8,13 +8,13 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func SetContactRoutes(r *echo.Echo, db *sql.DB) {
+func SetContactRoutes(e *echo.Echo, db *sql.DB) {
 	contactRepository := core.NewContactRepositoryDb(db)
 	contactService := service.NewContactDefaultService(contactRepository)
 
 	contactController := controller.NewContactController(contactService)
 
-	g := r.Group("/api/v1/contacts")
+	g := e.Group("/api/v1/contacts")
 
 	g.POST("/new", contactController.NewContact)
 	g.POST("/:contactId/number", contactController.AddNewNumbers)

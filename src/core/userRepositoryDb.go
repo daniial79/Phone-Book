@@ -15,12 +15,12 @@ func NewUserRepositoryDb(client *sql.DB) UserRepositoryDb {
 	return UserRepositoryDb{client: client}
 }
 
-func (r *UserRepositoryDb) CreateUser(u User) (*User, *errs.AppError) {
+func (r UserRepositoryDb) CreateUser(u User) (*User, *errs.AppError) {
 	insertSql := `INSERT INTO users(username, password, phone_number, created_at, updated_at) 
 				  VALUES ($1, $2, $3, $4, $5) RETURNING id`
 
 	var insertedId uuid.UUID
-	row := r.client.QueryRow(insertSql)
+	row := r.client.QueryRow(insertSql, u.Username, u.Password, u.PhoneNumber, u.CreatedAt, u.UpdatedAt)
 
 	if err := row.Scan(&insertedId); err != nil {
 		logger.Error("Error while inserting new record to user table")
