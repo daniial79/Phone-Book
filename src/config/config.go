@@ -7,11 +7,15 @@ import (
 	"os"
 )
 
+const (
+	errMissedEnvVar = "Error you have to provide proper environment variable: "
+)
+
 var AppConf Config
 
 func envVarSanityCheck(envVar string) string {
 	if len(os.Getenv(envVar)) == 0 {
-		log.Fatalln("Error you have to provide proper environment variable: " + envVar)
+		log.Fatalln(errMissedEnvVar + envVar)
 	}
 	return os.Getenv(envVar)
 }

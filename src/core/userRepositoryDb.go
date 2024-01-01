@@ -24,7 +24,7 @@ func (r UserRepositoryDb) CreateUser(u User) (*User, *errs.AppError) {
 
 	if err := row.Scan(&insertedId); err != nil {
 		logger.Error("Error while inserting new record to user table")
-		return nil, errs.NewUnexpectedErr("Unexpected error happened")
+		return nil, errs.NewUnexpectedErr(errs.InternalErr)
 	}
 
 	u.Id = insertedId

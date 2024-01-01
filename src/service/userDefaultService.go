@@ -24,7 +24,7 @@ func (s UserDefaultService) CreateUser(requestBody dto.CreateUserRequest) (*dto.
 	hashedPassword, err := utils.HashPassword(requestBody.Password)
 	if err != nil {
 		logger.Error("Error while hashing new user's password")
-		return nil, errs.NewUnexpectedErr("Unexpected error happened")
+		return nil, errs.NewUnexpectedErr(errs.InternalErr)
 	}
 
 	coreTypedUser := core.User{

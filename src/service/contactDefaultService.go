@@ -19,7 +19,7 @@ func (s ContactDefaultService) NewContact(requestBody dto.NewContactRequest) (*d
 	coreTypedObject := new(core.Contact)
 
 	if !requestBody.IsValid() {
-		return nil, errs.NewUnProcessableErr("Unprocessable request")
+		return nil, errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
 	}
 
 	coreTypedObject.Id = ""
@@ -55,7 +55,7 @@ func (s ContactDefaultService) NewContact(requestBody dto.NewContactRequest) (*d
 func (s ContactDefaultService) AddNewNumbers(requestBody []dto.AddNumberRequest, contactId string) ([]dto.AddNumberResponse, *errs.AppError) {
 	for _, r := range requestBody {
 		if !r.IsValid() {
-			return nil, errs.NewUnProcessableErr("Unprocessable request")
+			return nil, errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
 		}
 	}
 
@@ -88,7 +88,7 @@ func (s ContactDefaultService) AddNewEmails(requestBody []dto.AddEmailRequest, c
 
 	for _, r := range requestBody {
 		if !r.IsValid() {
-			return nil, errs.NewUnProcessableErr("Unprocessable request")
+			return nil, errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
 		}
 	}
 
@@ -197,7 +197,7 @@ func (s ContactDefaultService) DeleteContact(cId string) (*dto.NoContentResponse
 func (s ContactDefaultService) UpdateContactNumber(cId, nId string, requestBody dto.UpdateNumberRequest) (*dto.UpdateNumberResponse, *errs.AppError) {
 
 	if !requestBody.IsValid() {
-		return nil, errs.NewUnProcessableErr("Unprocessable request")
+		return nil, errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
 	}
 
 	coreTypedNumber := core.Number{
@@ -220,7 +220,7 @@ func (s ContactDefaultService) UpdateContactNumber(cId, nId string, requestBody 
 func (s ContactDefaultService) UpdateContactEmail(cId, eId string, requestBody dto.UpdateEmailRequest) (*dto.UpdateEmailResponse, *errs.AppError) {
 
 	if !requestBody.IsValid() {
-		return nil, errs.NewUnProcessableErr("Unprocessable request")
+		return nil, errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
 	}
 
 	coreTypedEmail := core.Email{
@@ -241,7 +241,7 @@ func (s ContactDefaultService) UpdateContactEmail(cId, eId string, requestBody d
 func (s ContactDefaultService) UpdateContact(cId string, requestBody dto.UpdateContactRequest) (*dto.UpdateContactResponse, *errs.AppError) {
 
 	if !requestBody.IsValid() {
-		return nil, errs.NewUnProcessableErr("Unprocessable request")
+		return nil, errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
 	}
 
 	coreTypedContact := core.Contact{

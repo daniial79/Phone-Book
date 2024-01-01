@@ -30,5 +30,5 @@ func (c UserController) SignUpController(ctx echo.Context) error {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
 
-	return ctx.JSONPretty(http.StatusCreated, response, " ")
+	return ctx.JSONPretty(http.StatusCreated, response, "  ")
 }
