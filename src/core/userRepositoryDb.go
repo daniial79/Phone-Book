@@ -2,9 +2,12 @@ package core
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 	"github.com/daniial79/Phone-Book/src/errs"
 	"github.com/daniial79/Phone-Book/src/logger"
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 type UserRepositoryDb struct {
@@ -23,6 +26,19 @@ func (r UserRepositoryDb) CreateUser(u User) (*User, *errs.AppError) {
 	row := r.client.QueryRow(insertSql, u.Username, u.Password, u.PhoneNumber, u.CreatedAt, u.UpdatedAt)
 
 	if err := row.Scan(&insertedId); err != nil {
+		fmt.Println(err)
+
+		var pgerr *pq.Error
+		if errors.As(err, &pgerr) {
+			if pgerr.Code == "23505" {
+				return nil, errs.NewUnProcessableErr(errs.UsernameUniquenessViolationErr)
+			}
+		}
+
+		//if strings.Contains(err.Error(),
+		//	"duplicate key value violates unique constraint \"users_username_key\"") {
+		//	fmt.Println("Unique error detected")
+		//}
 		logger.Error("Error while inserting new record to user table")
 		return nil, errs.NewUnexpectedErr(errs.InternalErr)
 	}

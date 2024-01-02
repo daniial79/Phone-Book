@@ -16,5 +16,5 @@ func SetUserRoutes(e *echo.Echo, db *sql.DB) {
 
 	r := e.Group("/api/v1")
 
-	r.POST("/signup", userController.SignUpController)
+	r.POST("/users/signup", userController.SignUpController)
 }
