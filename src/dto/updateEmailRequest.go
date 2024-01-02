@@ -1,16 +1,18 @@
 package dto
 
+import "github.com/daniial79/Phone-Book/src/errs"
+
 type UpdateEmailRequest struct {
 	NewAddress string `json:"newAddress"`
 }
 
-func (r *UpdateEmailRequest) IsValid() bool {
+func (r *UpdateEmailRequest) Validate() *errs.AppError {
 	emptyLiteralSample := UpdateEmailRequest{}
 	requestLiteralValue := *r
 
 	if requestLiteralValue == emptyLiteralSample {
-		return false
+		return errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
 	}
 
-	return true
+	return nil
 }

@@ -18,8 +18,8 @@ func NewContactDefaultService(repo core.ContactRepositoryDb) ContactDefaultServi
 func (s ContactDefaultService) NewContact(requestBody dto.NewContactRequest) (*dto.NewContactResponse, *errs.AppError) {
 	coreTypedObject := new(core.Contact)
 
-	if !requestBody.IsValid() {
-		return nil, errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
+	if appErr := requestBody.Validate(); appErr != nil {
+		return nil, appErr
 	}
 
 	coreTypedObject.Id = ""
@@ -54,8 +54,8 @@ func (s ContactDefaultService) NewContact(requestBody dto.NewContactRequest) (*d
 
 func (s ContactDefaultService) AddNewNumbers(requestBody []dto.AddNumberRequest, contactId string) ([]dto.AddNumberResponse, *errs.AppError) {
 	for _, r := range requestBody {
-		if !r.IsValid() {
-			return nil, errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
+		if appErr := r.Validate(); appErr != nil {
+			return nil, appErr
 		}
 	}
 
@@ -87,8 +87,8 @@ func (s ContactDefaultService) AddNewEmails(requestBody []dto.AddEmailRequest, c
 	coreTypedEmails := make([]core.Email, len(requestBody))
 
 	for _, r := range requestBody {
-		if !r.IsValid() {
-			return nil, errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
+		if appErr := r.Validate(); appErr != nil {
+			return nil, appErr
 		}
 	}
 
@@ -196,8 +196,8 @@ func (s ContactDefaultService) DeleteContact(cId string) (*dto.NoContentResponse
 
 func (s ContactDefaultService) UpdateContactNumber(cId, nId string, requestBody dto.UpdateNumberRequest) (*dto.UpdateNumberResponse, *errs.AppError) {
 
-	if !requestBody.IsValid() {
-		return nil, errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
+	if appErr := requestBody.Validate(); appErr != nil {
+		return nil, appErr
 	}
 
 	coreTypedNumber := core.Number{
@@ -219,7 +219,7 @@ func (s ContactDefaultService) UpdateContactNumber(cId, nId string, requestBody 
 
 func (s ContactDefaultService) UpdateContactEmail(cId, eId string, requestBody dto.UpdateEmailRequest) (*dto.UpdateEmailResponse, *errs.AppError) {
 
-	if !requestBody.IsValid() {
+	if appErr := requestBody.Validate(); appErr != nil {
 		return nil, errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
 	}
 
@@ -240,7 +240,7 @@ func (s ContactDefaultService) UpdateContactEmail(cId, eId string, requestBody d
 
 func (s ContactDefaultService) UpdateContact(cId string, requestBody dto.UpdateContactRequest) (*dto.UpdateContactResponse, *errs.AppError) {
 
-	if !requestBody.IsValid() {
+	if appErr := requestBody.Validate(); appErr != nil {
 		return nil, errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
 	}
 

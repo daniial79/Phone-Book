@@ -35,10 +35,6 @@ func (r UserRepositoryDb) CreateUser(u User) (*User, *errs.AppError) {
 			}
 		}
 
-		//if strings.Contains(err.Error(),
-		//	"duplicate key value violates unique constraint \"users_username_key\"") {
-		//	fmt.Println("Unique error detected")
-		//}
 		logger.Error("Error while inserting new record to user table")
 		return nil, errs.NewUnexpectedErr(errs.InternalErr)
 	}

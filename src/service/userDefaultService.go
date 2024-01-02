@@ -17,8 +17,8 @@ func NewUserDefaultService(repo core.UserRepository) UserDefaultService {
 }
 
 func (s UserDefaultService) CreateUser(requestBody dto.CreateUserRequest) (*dto.CreateUserResponse, *errs.AppError) {
-	if !requestBody.IsValid() {
-		return nil, errs.NewUnProcessableErr("Password should be at least 8 characters")
+	if appErr := requestBody.Validate(); appErr != nil {
+		return nil, appErr
 	}
 
 	hashedPassword, err := utils.HashPassword(requestBody.Password)
