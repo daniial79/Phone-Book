@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/daniial79/Phone-Book/src/auth"
 	"github.com/daniial79/Phone-Book/src/core"
 	"github.com/daniial79/Phone-Book/src/dto"
 	"github.com/daniial79/Phone-Book/src/errs"
@@ -21,7 +22,7 @@ func (s UserDefaultService) CreateUser(requestBody dto.CreateUserRequest) (*dto.
 		return nil, appErr
 	}
 
-	hashedPassword, err := utils.HashPassword(requestBody.Password)
+	hashedPassword, err := auth.HashPassword(requestBody.Password)
 	if err != nil {
 		logger.Error("Error while hashing new user's password")
 		return nil, errs.NewUnexpectedErr(errs.InternalErr)

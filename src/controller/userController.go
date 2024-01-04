@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/daniial79/Phone-Book/src/auth"
 	"github.com/daniial79/Phone-Book/src/dto"
 	"github.com/daniial79/Phone-Book/src/errs"
 	"github.com/daniial79/Phone-Book/src/service"
@@ -29,6 +30,13 @@ func (c UserController) SignUpController(ctx echo.Context) error {
 	if appErr != nil {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
+
+	tokenString, appErr := auth.GenerateToken(requestBody.Username)
+	if appErr != nil {
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+	}
+
+	auth.SetAuthorizationCookie(&ctx, tokenString)
 
 	return ctx.JSONPretty(http.StatusCreated, response, "  ")
 }
