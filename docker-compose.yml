@@ -17,6 +17,7 @@ services:
       target: dev
     environment:
       - PORT=8000
+      - JWT_KEY=ag5sd1g6s4d6465s
       - DB_DRIVER=postgres
       - DB_HOST=db
       - DB_PORT=5432

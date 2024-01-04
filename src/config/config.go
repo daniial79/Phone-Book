@@ -23,6 +23,7 @@ func envVarSanityCheck(envVar string) string {
 func LoadConfig() {
 	AppConf = Config{
 		port:       envVarSanityCheck("PORT"),
+		jwtKey:     envVarSanityCheck("JWT_KEY"),
 		dbDriver:   envVarSanityCheck("DB_DRIVER"),
 		dbHost:     envVarSanityCheck("DB_HOST"),
 		dbPort:     envVarSanityCheck("DB_PORT"),
@@ -36,6 +37,7 @@ func LoadConfig() {
 
 type Config struct {
 	port       string
+	jwtKey     string
 	dbDriver   string
 	dbHost     string
 	dbPort     string
@@ -64,4 +66,8 @@ func (c Config) GetDataSourceName() string {
 	)
 
 	return dsn
+}
+
+func (c Config) GetJwtKey() string {
+	return c.jwtKey
 }
