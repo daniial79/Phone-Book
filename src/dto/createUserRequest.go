@@ -15,6 +15,12 @@ func (r CreateUserRequest) Validate() *errs.AppError {
 		return errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
 	}
 
+	if r.Username == "" ||
+		r.Password == "" ||
+		r.PhoneNumber == "" {
+		return errs.NewCredentialsErr(errs.InsufficientCredentialsErr)
+	}
+
 	if len(r.Password) < 8 {
 		return errs.NewUnProcessableErr(errs.ShortPasswordErr)
 	}

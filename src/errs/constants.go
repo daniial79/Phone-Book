@@ -7,4 +7,5 @@ const (
 	UsernameUniquenessViolationErr = "This username is already in use"
 	ShortPasswordErr               = "Password should be at least 8 characters"
 	MismatchedPasswords            = "provided password is incorrect"
+	InsufficientCredentialsErr     = "You have to provide enough credentials"
 )

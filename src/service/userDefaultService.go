@@ -19,7 +19,7 @@ func NewUserDefaultService(repo core.UserRepository) UserDefaultService {
 	return UserDefaultService{repo: repo}
 }
 
-func (s UserDefaultService) SignupUser(requestBody dto.CreateUserRequest) (*dto.CreateUserResponse, *errs.AppError) {
+func (s UserDefaultService) SignUpUser(requestBody dto.CreateUserRequest) (*dto.CreateUserResponse, *errs.AppError) {
 	if appErr := requestBody.Validate(); appErr != nil {
 		return nil, appErr
 	}
@@ -48,7 +48,11 @@ func (s UserDefaultService) SignupUser(requestBody dto.CreateUserRequest) (*dto.
 	return response, nil
 }
 
-func (s UserDefaultService) LoginUser(requestBody dto.UserLoginRequest) (*dto.UserLoginResponse, *errs.AppError) {
+func (s UserDefaultService) LogInUser(requestBody dto.UserLoginRequest) (*dto.UserLoginResponse, *errs.AppError) {
+	if appErr := requestBody.Validate(); appErr != nil {
+		return nil, appErr
+	}
+
 	username, password := requestBody.Username, requestBody.Password
 
 	coreTypedUser, appErr := s.repo.GetUserByUsername(username)

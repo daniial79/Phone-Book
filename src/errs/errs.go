@@ -47,3 +47,10 @@ func NewUnAuthorizedErr(message string) *AppError {
 		Message:    message,
 	}
 }
+
+func NewCredentialsErr(message string) *AppError {
+	return &AppError{
+		StatusCode: http.StatusBadRequest,
+		Message:    message,
+	}
+}

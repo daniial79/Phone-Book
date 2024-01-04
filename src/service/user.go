@@ -6,6 +6,6 @@ import (
 )
 
 type UserService interface {
-	SignupUser(requestBody dto.CreateUserRequest) (*dto.CreateUserResponse, *errs.AppError)
-	LoginUser(requestBody dto.UserLoginRequest) (*dto.UserLoginResponse, *errs.AppError)
+	SignUpUser(requestBody dto.CreateUserRequest) (*dto.CreateUserResponse, *errs.AppError)
+	LogInUser(requestBody dto.UserLoginRequest) (*dto.UserLoginResponse, *errs.AppError)
 }
