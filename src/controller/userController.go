@@ -26,7 +26,7 @@ func (c UserController) SignUpController(ctx echo.Context) error {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
 
-	response, appErr := c.service.CreateUser(requestBody)
+	response, appErr := c.service.SignupUser(requestBody)
 	if appErr != nil {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}

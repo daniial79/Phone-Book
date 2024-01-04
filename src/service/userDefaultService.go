@@ -1,12 +1,14 @@
 package service
 
 import (
+	"errors"
 	"github.com/daniial79/Phone-Book/src/auth"
 	"github.com/daniial79/Phone-Book/src/core"
 	"github.com/daniial79/Phone-Book/src/dto"
 	"github.com/daniial79/Phone-Book/src/errs"
 	"github.com/daniial79/Phone-Book/src/logger"
 	"github.com/daniial79/Phone-Book/src/utils"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserDefaultService struct {
@@ -17,7 +19,7 @@ func NewUserDefaultService(repo core.UserRepository) UserDefaultService {
 	return UserDefaultService{repo: repo}
 }
 
-func (s UserDefaultService) CreateUser(requestBody dto.CreateUserRequest) (*dto.CreateUserResponse, *errs.AppError) {
+func (s UserDefaultService) SignupUser(requestBody dto.CreateUserRequest) (*dto.CreateUserResponse, *errs.AppError) {
 	if appErr := requestBody.Validate(); appErr != nil {
 		return nil, appErr
 	}
@@ -41,7 +43,30 @@ func (s UserDefaultService) CreateUser(requestBody dto.CreateUserRequest) (*dto.
 		return nil, appErr
 	}
 
-	response := createdUser.ToResponseDto()
+	response := createdUser.ToCreatedResponseDto()
 
 	return response, nil
+}
+
+func (s UserDefaultService) LoginUser(requestBody dto.UserLoginRequest) (*dto.UserLoginResponse, *errs.AppError) {
+	username, password := requestBody.Username, requestBody.Password
+
+	coreTypedUser, appErr := s.repo.GetUserByUsername(username)
+	if appErr != nil {
+		return nil, appErr
+	}
+
+	err := auth.ComparePasswords(coreTypedUser.Password, password)
+	if err != nil {
+		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+			return nil, errs.NewUnAuthorizedErr(errs.MismatchedPasswords)
+		}
+		logger.Error("Error while comparing hash and plain text password: " + err.Error())
+		return nil, errs.NewUnexpectedErr(errs.InternalErr)
+	}
+
+	response := coreTypedUser.ToLoggedInResponseDto()
+
+	return response, nil
+
 }

@@ -40,3 +40,10 @@ func NewUnProcessableErr(message string) *AppError {
 		Message:    message,
 	}
 }
+
+func NewUnAuthorizedErr(message string) *AppError {
+	return &AppError{
+		StatusCode: http.StatusUnauthorized,
+		Message:    message,
+	}
+}
