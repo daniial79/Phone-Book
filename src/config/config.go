@@ -2,26 +2,23 @@ package config
 
 import (
 	"fmt"
+	"github.com/daniial79/Phone-Book/src/errs"
 	"github.com/daniial79/Phone-Book/src/logger"
 	"log"
 	"os"
 )
 
-const (
-	errMissedEnvVar = "Error you have to provide proper environment variable: "
-)
-
-var AppConf Config
+var appConf Config
 
 func envVarSanityCheck(envVar string) string {
 	if len(os.Getenv(envVar)) == 0 {
-		log.Fatalln(errMissedEnvVar + envVar)
+		log.Fatalln(errs.MissedEnvVarErr + envVar)
 	}
 	return os.Getenv(envVar)
 }
 
 func LoadConfig() {
-	AppConf = Config{
+	appConf = Config{
 		port:       envVarSanityCheck("PORT"),
 		jwtKey:     envVarSanityCheck("JWT_KEY"),
 		dbDriver:   envVarSanityCheck("DB_DRIVER"),
@@ -47,27 +44,27 @@ type Config struct {
 	sslMode    string
 }
 
-func (c Config) GetPort() string {
-	return ":" + c.port
+func GetPort() string {
+	return ":" + appConf.port
 }
 
-func (c Config) GetDatabaseDriver() string {
-	return c.dbDriver
+func GetDatabaseDriver() string {
+	return appConf.dbDriver
 }
 
-func (c Config) GetDataSourceName() string {
+func GetDataSourceName() string {
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		c.dbHost,
-		c.dbPort,
-		c.dbUserName,
-		c.dbPassword,
-		c.dbName,
-		c.sslMode,
+		appConf.dbHost,
+		appConf.dbPort,
+		appConf.dbUserName,
+		appConf.dbPassword,
+		appConf.dbName,
+		appConf.sslMode,
 	)
 
 	return dsn
 }
 
-func (c Config) GetJwtKey() string {
-	return c.jwtKey
+func GetJwtKey() string {
+	return appConf.jwtKey
 }

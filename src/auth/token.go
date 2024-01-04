@@ -10,22 +10,22 @@ import (
 	"time"
 )
 
-type Claims struct {
+type claim struct {
 	Username string `json:"username"`
 	jwt.StandardClaims
 }
 
 func GenerateToken(username string) (string, *errs.AppError) {
-	claim := Claims{
+	c := claim{
 		Username: username,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Minute * 30).Unix(),
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
 
-	tokenString, err := token.SignedString([]byte(config.AppConf.GetJwtKey()))
+	tokenString, err := token.SignedString([]byte(config.GetJwtKey()))
 	if err != nil {
 		logger.Error("Error while generating auth-token for new user: " + err.Error())
 		return "", errs.NewUnexpectedErr(errs.InternalErr)

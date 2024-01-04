@@ -18,7 +18,7 @@ func Start() {
 	routes.SetContactRoutes(e, dbClient)
 
 	logger.Info("Server is up and running on port 8000...")
-	if err := e.Start(config.AppConf.GetPort()); err != nil {
+	if err := e.Start(config.GetPort()); err != nil {
 		log.Fatalln(err)
 	}
 }

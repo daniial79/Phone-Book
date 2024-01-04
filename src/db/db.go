@@ -9,8 +9,8 @@ import (
 
 func GetNewConnection() *sql.DB {
 	db, err := sql.Open(
-		config.AppConf.GetDatabaseDriver(),
-		config.AppConf.GetDataSourceName(),
+		config.GetDatabaseDriver(),
+		config.GetDataSourceName(),
 	)
 
 	if err != nil {
