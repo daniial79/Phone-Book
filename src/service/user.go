@@ -7,4 +7,5 @@ import (
 
 type UserService interface {
 	CreateUser(requestBody dto.CreateUserRequest) (*dto.CreateUserResponse, *errs.AppError)
+	GetUserByUsername(requestBody dto.UserLoginRequest) (*dto.UserLoginResponse, *errs.AppError)
 }
