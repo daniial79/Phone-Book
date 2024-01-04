@@ -8,6 +8,7 @@ import (
 
 type UserRepository interface {
 	CreateUser(User) (*User, *errs.AppError)
+	GetUserByUsername(username string) (*User, *errs.AppError)
 }
 
 type User struct {

@@ -42,3 +42,25 @@ func (r UserRepositoryDb) CreateUser(u User) (*User, *errs.AppError) {
 	u.Id = insertedId
 	return &u, nil
 }
+
+func (r UserRepositoryDb) GetUserByUsername(username string) (*User, *errs.AppError) {
+	selectQuery := `SELECT id, username, password FROM users WHERE username = $1`
+
+	var fetchedUser User
+	rows, err := r.client.Query(selectQuery, username)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errs.NewNotFoundErr("There is no user with such username")
+		}
+		logger.Error("Error while getting user by username: " + err.Error())
+		return nil, errs.NewUnexpectedErr(errs.InternalErr)
+	}
+
+	err = rows.Scan(&fetchedUser.Id, &fetchedUser.Username, &fetchedUser.Password)
+	if err != nil {
+		logger.Error("Error while scanning retrieved columns from users table by username: " + err.Error())
+		return nil, errs.NewUnexpectedErr(errs.InternalErr)
+	}
+
+	return &fetchedUser, nil
+}
