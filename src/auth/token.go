@@ -10,35 +10,67 @@ import (
 	"time"
 )
 
-type claim struct {
+type userClaim struct {
 	Username string `json:"username"`
 	jwt.StandardClaims
 }
 
-func GenerateToken(username string) (string, *errs.AppError) {
-	c := claim{
+func NewAccessToken(username string) (string, *errs.AppError) {
+	c := userClaim{
 		Username: username,
 		StandardClaims: jwt.StandardClaims{
+			IssuedAt:  time.Now().Unix(),
 			ExpiresAt: time.Now().Add(time.Minute * 30).Unix(),
 		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
 
-	tokenString, err := token.SignedString([]byte(config.GetJwtKey()))
+	accessToken, err := token.SignedString([]byte(config.GetJwtKey()))
 	if err != nil {
-		logger.Error("Error while generating auth-token for new user: " + err.Error())
+		logger.Error("Error while generating access token for new user: " + err.Error())
 		return "", errs.NewUnexpectedErr(errs.InternalErr)
 	}
 
-	return tokenString, nil
+	return accessToken, nil
 }
 
-func SetAuthorizationCookie(ctx *echo.Context, authToken string) {
+func NewRefreshToken(username string) (string, *errs.AppError) {
+	c := userClaim{
+		Username: username,
+		StandardClaims: jwt.StandardClaims{
+			IssuedAt:  time.Now().Unix(),
+			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
+
+	refreshToken, err := token.SignedString([]byte(config.GetJwtKey()))
+	if err != nil {
+		logger.Error("Error while generating refresh token for new user: " + err.Error())
+		return "", errs.NewUnexpectedErr(errs.InternalErr)
+	}
+
+	return refreshToken, nil
+}
+
+func SetAccessTokenCookie(ctx *echo.Context, accessToken string) {
 	cookie := new(http.Cookie)
-	cookie.Name = "Authorization"
-	cookie.Value = authToken
+	cookie.Name = "Access-Token"
+	cookie.Value = accessToken
 	cookie.Expires = time.Now().Add(time.Minute * 30)
+	cookie.Path = "/"
+	cookie.HttpOnly = true
+
+	(*ctx).SetCookie(cookie)
+}
+
+func SetRefreshTokenCookie(ctx *echo.Context, refreshToken string) {
+	cookie := new(http.Cookie)
+	cookie.Name = "Refresh-Token"
+	cookie.Value = refreshToken
+	cookie.Expires = time.Now().Add(time.Hour * 24)
 	cookie.Path = "/"
 	cookie.HttpOnly = true
 

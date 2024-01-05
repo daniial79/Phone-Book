@@ -31,12 +31,17 @@ func (c UserController) SignUpController(ctx echo.Context) error {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
 
-	tokenString, appErr := auth.GenerateToken(requestBody.Username)
+	accessToken, appErr := auth.NewAccessToken(requestBody.Username)
 	if appErr != nil {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
+	auth.SetAccessTokenCookie(&ctx, accessToken)
 
-	auth.SetAuthorizationCookie(&ctx, tokenString)
+	refreshToken, appErr := auth.NewRefreshToken(requestBody.Username)
+	if appErr != nil {
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+	}
+	auth.SetRefreshTokenCookie(&ctx, refreshToken)
 
 	return ctx.JSONPretty(http.StatusCreated, response, "  ")
 }
@@ -53,12 +58,17 @@ func (c UserController) LogInController(ctx echo.Context) error {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
 
-	tokenString, appErr := auth.GenerateToken(requestBody.Username)
+	accessToken, appErr := auth.NewAccessToken(requestBody.Username)
 	if appErr != nil {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
+	auth.SetAccessTokenCookie(&ctx, accessToken)
 
-	auth.SetAuthorizationCookie(&ctx, tokenString)
+	refreshToken, appErr := auth.NewRefreshToken(requestBody.Username)
+	if appErr != nil {
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+	}
+	auth.SetRefreshTokenCookie(&ctx, refreshToken)
 
 	return ctx.JSONPretty(http.StatusOK, response, "  ")
 }
