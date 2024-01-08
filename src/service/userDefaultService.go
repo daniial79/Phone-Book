@@ -34,8 +34,8 @@ func (s UserDefaultService) SignUpUser(requestBody dto.CreateUserRequest) (*dto.
 		Username:    requestBody.Username,
 		Password:    hashedPassword,
 		PhoneNumber: requestBody.PhoneNumber,
-		CreatedAt:   utils.GenCurrentDate(),
-		UpdatedAt:   utils.GenCurrentDate(),
+		CreatedAt:   utils.NewCurrentDate(),
+		UpdatedAt:   utils.NewCurrentDate(),
 	}
 
 	createdUser, appErr := s.repo.CreateUser(coreTypedUser)

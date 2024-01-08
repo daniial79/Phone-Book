@@ -5,6 +5,7 @@ import (
 	"github.com/daniial79/Phone-Book/src/dto"
 	"github.com/daniial79/Phone-Book/src/errs"
 	"github.com/daniial79/Phone-Book/src/service"
+	"github.com/daniial79/Phone-Book/src/utils"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
@@ -35,13 +36,13 @@ func (c UserController) SignUpController(ctx echo.Context) error {
 	if appErr != nil {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
-	auth.SetAccessTokenCookie(&ctx, accessToken)
+	auth.SetAuthCookie(&ctx, accessToken, "Access-Token", utils.NewAccessTokenExpTime())
 
 	refreshToken, appErr := auth.NewRefreshToken(requestBody.Username)
 	if appErr != nil {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
-	auth.SetRefreshTokenCookie(&ctx, refreshToken)
+	auth.SetAuthCookie(&ctx, refreshToken, "Refresh-Token", utils.NewRefreshTokenExpTime())
 
 	return ctx.JSONPretty(http.StatusCreated, response, "  ")
 }
@@ -62,13 +63,13 @@ func (c UserController) LogInController(ctx echo.Context) error {
 	if appErr != nil {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
-	auth.SetAccessTokenCookie(&ctx, accessToken)
+	auth.SetAuthCookie(&ctx, accessToken, "Access-Token", utils.NewAccessTokenExpTime())
 
 	refreshToken, appErr := auth.NewRefreshToken(requestBody.Username)
 	if appErr != nil {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
-	auth.SetRefreshTokenCookie(&ctx, refreshToken)
+	auth.SetAuthCookie(&ctx, refreshToken, "Refresh-Token", utils.NewRefreshTokenExpTime())
 
 	return ctx.JSONPretty(http.StatusOK, response, "  ")
 }

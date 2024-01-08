@@ -4,6 +4,7 @@ import (
 	"github.com/daniial79/Phone-Book/src/config"
 	"github.com/daniial79/Phone-Book/src/errs"
 	"github.com/daniial79/Phone-Book/src/logger"
+	"github.com/daniial79/Phone-Book/src/utils"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -15,62 +16,62 @@ type userClaim struct {
 	jwt.StandardClaims
 }
 
-func NewAccessToken(username string) (string, *errs.AppError) {
+func generateToken(
+	username string,
+	ExpiresAt time.Time,
+
+) (string, *errs.AppError) {
 	c := userClaim{
 		Username: username,
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  time.Now().Unix(),
-			ExpiresAt: time.Now().Add(time.Minute * 30).Unix(),
+			ExpiresAt: ExpiresAt.Unix(),
 		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
 
-	accessToken, err := token.SignedString([]byte(config.GetJwtKey()))
+	stringToken, err := token.SignedString([]byte(config.GetJwtKey()))
 	if err != nil {
-		logger.Error("Error while generating access token for new user: " + err.Error())
+		logger.Error("Error while generating string token")
 		return "", errs.NewUnexpectedErr(errs.InternalErr)
+	}
+
+	return stringToken, nil
+}
+
+func NewAccessToken(username string) (string, *errs.AppError) {
+	expirationTime := utils.NewAccessTokenExpTime()
+	accessToken, err := generateToken(username, expirationTime)
+
+	if err != nil {
+		return "", err
 	}
 
 	return accessToken, nil
 }
 
 func NewRefreshToken(username string) (string, *errs.AppError) {
-	c := userClaim{
-		Username: username,
-		StandardClaims: jwt.StandardClaims{
-			IssuedAt:  time.Now().Unix(),
-			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
-		},
-	}
+	expirationTime := utils.NewRefreshTokenExpTime()
+	refreshToken, err := generateToken(username, expirationTime)
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
-
-	refreshToken, err := token.SignedString([]byte(config.GetJwtKey()))
 	if err != nil {
-		logger.Error("Error while generating refresh token for new user: " + err.Error())
-		return "", errs.NewUnexpectedErr(errs.InternalErr)
+		return "", err
 	}
 
 	return refreshToken, nil
 }
 
-func SetAccessTokenCookie(ctx *echo.Context, accessToken string) {
+func SetAuthCookie(
+	ctx *echo.Context,
+	stringToken string,
+	name string,
+	expAt time.Time,
+) {
 	cookie := new(http.Cookie)
-	cookie.Name = "Access-Token"
-	cookie.Value = accessToken
-	cookie.Expires = time.Now().Add(time.Minute * 30)
-	cookie.Path = "/"
-	cookie.HttpOnly = true
-
-	(*ctx).SetCookie(cookie)
-}
-
-func SetRefreshTokenCookie(ctx *echo.Context, refreshToken string) {
-	cookie := new(http.Cookie)
-	cookie.Name = "Refresh-Token"
-	cookie.Value = refreshToken
-	cookie.Expires = time.Now().Add(time.Hour * 24)
+	cookie.Name = name
+	cookie.Value = stringToken
+	cookie.Expires = expAt
 	cookie.Path = "/"
 	cookie.HttpOnly = true
 
