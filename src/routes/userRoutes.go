@@ -18,4 +18,5 @@ func SetUserRoutes(e *echo.Echo, db *sql.DB) {
 
 	r.POST("/users/signup", userController.SignUpController)
 	r.POST("/users/login", userController.LogInController)
+	r.POST("/users/refresh", userController.RefreshTokenController)
 }

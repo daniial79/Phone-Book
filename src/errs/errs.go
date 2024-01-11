@@ -54,3 +54,10 @@ func NewCredentialsErr(message string) *AppError {
 		Message:    message,
 	}
 }
+
+func NewBadRequestErr(message string) *AppError {
+	return &AppError{
+		StatusCode: http.StatusBadRequest,
+		Message:    message,
+	}
+}

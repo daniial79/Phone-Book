@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"github.com/daniial79/Phone-Book/src/auth"
 	"github.com/daniial79/Phone-Book/src/dto"
 	"github.com/daniial79/Phone-Book/src/errs"
@@ -72,4 +73,26 @@ func (c UserController) LogInController(ctx echo.Context) error {
 	auth.SetAuthCookie(&ctx, refreshToken, "Refresh-Token", utils.NewRefreshTokenExpTime())
 
 	return ctx.JSONPretty(http.StatusOK, response, "  ")
+}
+
+func (c UserController) RefreshTokenController(ctx echo.Context) error {
+	cookie, err := ctx.Cookie("Refresh-Token")
+	if errors.Is(err, http.ErrNoCookie) {
+		appErr := errs.NewUnAuthorizedErr("Refresh cookie not found")
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+	}
+
+	refresherToken := cookie.Value
+	username, appErr := auth.ParseJwtWithClaims(refresherToken)
+	if appErr != nil {
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+	}
+
+	accessToken, appErr := auth.NewAccessToken(username)
+	if appErr != nil {
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+	}
+
+	auth.SetAuthCookie(&ctx, accessToken, "Access-Token", utils.NewAccessTokenExpTime())
+	return ctx.JSONPretty(http.StatusOK, dto.NoContentResponse{}, "  ")
 }

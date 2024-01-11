@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"errors"
+	"fmt"
 	"github.com/daniial79/Phone-Book/src/config"
 	"github.com/daniial79/Phone-Book/src/errs"
 	"github.com/daniial79/Phone-Book/src/logger"
@@ -11,7 +13,7 @@ import (
 	"time"
 )
 
-type userClaim struct {
+type UserClaim struct {
 	Username string `json:"username"`
 	jwt.StandardClaims
 }
@@ -21,7 +23,7 @@ func generateToken(
 	ExpiresAt time.Time,
 
 ) (string, *errs.AppError) {
-	c := userClaim{
+	c := UserClaim{
 		Username: username,
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  time.Now().Unix(),
@@ -60,6 +62,27 @@ func NewRefreshToken(username string) (string, *errs.AppError) {
 	}
 
 	return refreshToken, nil
+}
+
+func ParseJwtWithClaims(tokenString string) (string, *errs.AppError) {
+	var uc UserClaim
+	token, err := jwt.ParseWithClaims(tokenString, &uc, func(token *jwt.Token) (interface{}, error) {
+		return []byte(config.GetJwtKey()), nil
+	})
+
+	if err != nil {
+		if errors.Is(err, jwt.ErrSignatureInvalid) {
+			return "", errs.NewUnAuthorizedErr("Invalid signature for refresh token")
+		}
+		fmt.Println(err)
+		return "", errs.NewBadRequestErr("Bad request for jwt parsing")
+	}
+
+	if !token.Valid {
+		return "", errs.NewUnAuthorizedErr("Invalid refresh token")
+	}
+
+	return uc.Username, nil
 }
 
 func SetAuthCookie(
