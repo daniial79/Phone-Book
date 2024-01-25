@@ -63,7 +63,7 @@ func (s UserDefaultService) LogInUser(requestBody dto.UserLoginRequest) (*dto.Us
 	err := auth.ComparePasswords(coreTypedUser.Password, password)
 	if err != nil {
 		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-			return nil, errs.NewUnAuthorizedErr(errs.MismatchedPasswords)
+			return nil, errs.NewUnAuthorizedErr(errs.UnauthorizedErr)
 		}
 		logger.Error("Error while comparing hash and plain text password: " + err.Error())
 		return nil, errs.NewUnexpectedErr(errs.InternalErr)

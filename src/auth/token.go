@@ -2,7 +2,6 @@ package auth
 
 import (
 	"errors"
-	"fmt"
 	"github.com/daniial79/Phone-Book/src/config"
 	"github.com/daniial79/Phone-Book/src/errs"
 	"github.com/daniial79/Phone-Book/src/logger"
@@ -72,14 +71,13 @@ func ParseJwtWithClaims(tokenString string) (string, *errs.AppError) {
 
 	if err != nil {
 		if errors.Is(err, jwt.ErrSignatureInvalid) {
-			return "", errs.NewUnAuthorizedErr("Invalid signature for refresh token")
+			return "", errs.NewUnAuthorizedErr(errs.UnauthorizedErr)
 		}
-		fmt.Println(err)
-		return "", errs.NewBadRequestErr("Bad request for jwt parsing")
+		return "", errs.NewBadRequestErr(errs.BadRequestErr)
 	}
 
 	if !token.Valid {
-		return "", errs.NewUnAuthorizedErr("Invalid refresh token")
+		return "", errs.NewUnAuthorizedErr(errs.InvalidRefreshTokenErr)
 	}
 
 	return uc.Username, nil

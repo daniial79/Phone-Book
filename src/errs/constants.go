@@ -6,6 +6,9 @@ const (
 	UnprocessableRequestErr        = "Unprocessable request"
 	UsernameUniquenessViolationErr = "This username is already in use"
 	ShortPasswordErr               = "Password should be at least 8 characters"
-	MismatchedPasswords            = "provided password is incorrect"
 	InsufficientCredentialsErr     = "You have to provide enough credentials"
+	BadRequestErr                  = "Bad request"
+	InvalidRefreshTokenErr         = "Invalid refresh token"
+	UnauthorizedErr                = "Unauthorized user"
+	CookieNotFoundErr              = "Cookie not found"
 )

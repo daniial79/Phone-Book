@@ -26,6 +26,9 @@ func (c ContactController) NewContact(ctx echo.Context) error {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
 
+	username := ctx.Get("username")
+	requestBody.Username = username.(string)
+
 	response, err := c.service.NewContact(requestBody)
 	if err != nil {
 		return ctx.JSONPretty(err.StatusCode, err.AsMessage(), "  ")

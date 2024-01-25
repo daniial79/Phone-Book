@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/daniial79/Phone-Book/src/controller"
 	"github.com/daniial79/Phone-Book/src/core"
+	mw "github.com/daniial79/Phone-Book/src/middleware"
 	"github.com/daniial79/Phone-Book/src/service"
 	"github.com/labstack/echo/v4"
 )
@@ -14,7 +15,7 @@ func SetContactRoutes(e *echo.Echo, db *sql.DB) {
 
 	contactController := controller.NewContactController(contactService)
 
-	g := e.Group("/api/v1/contacts")
+	g := e.Group("/api/v1/contacts", mw.CheckAccessToken)
 
 	g.POST("/new", contactController.NewContact)
 	g.POST("/:contactId/number", contactController.AddNewNumbers)
