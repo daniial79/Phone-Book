@@ -3,6 +3,7 @@ package core
 import (
 	"github.com/daniial79/Phone-Book/src/dto"
 	"github.com/daniial79/Phone-Book/src/errs"
+	"github.com/google/uuid"
 )
 
 // ContactRepository Contact secondary port
@@ -24,9 +25,10 @@ type ContactRepository interface {
 
 // Contact contact core object definition
 type Contact struct {
-	Id           string `db:"id"`
-	FirstName    string `db:"first_name"`
-	LastName     string `db:"last_name"`
+	Id           uuid.UUID `db:"id"`
+	OwnerId      uuid.UUID `db:"owner_id"`
+	FirstName    string    `db:"first_name"`
+	LastName     string    `db:"last_name"`
 	PhoneNumbers []Number
 	Emails       []Email
 }

@@ -1,6 +1,8 @@
 package dto
 
+import "github.com/google/uuid"
+
 type AddEmailResponse struct {
-	Id      string `json:"id"`
-	Address string `json:"address"`
+	Id      uuid.UUID `json:"id"`
+	Address string    `json:"address"`
 }

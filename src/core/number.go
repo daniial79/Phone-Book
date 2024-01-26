@@ -2,14 +2,15 @@ package core
 
 import (
 	"github.com/daniial79/Phone-Book/src/dto"
+	"github.com/google/uuid"
 )
 
 // Number core object definition
 type Number struct {
-	Id          string `db:"id"`
-	ContactId   string `db:"contact_id"`
-	PhoneNumber string `db:"number"`
-	Label       string `db:"label"`
+	Id          uuid.UUID `db:"id"`
+	ContactId   uuid.UUID `db:"contact_id"`
+	PhoneNumber string    `db:"number"`
+	Label       string    `db:"label"`
 }
 
 func (n Number) ToAddNumberResponseDto() dto.AddNumberResponse {
