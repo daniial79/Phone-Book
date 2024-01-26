@@ -18,6 +18,7 @@ func NewContactRepositoryDb(client *sql.DB) ContactRepositoryDb {
 	return ContactRepositoryDb{client: client}
 }
 
+// GetContactOwnerByUsername Check for user existence and user id eventually using username
 func (r ContactRepositoryDb) GetContactOwnerByUsername(username string) (uuid.UUID, *errs.AppError) {
 	selectQuery := `SELECT id FROM users WHERE username = $1`
 
@@ -36,7 +37,16 @@ func (r ContactRepositoryDb) GetContactOwnerByUsername(username string) (uuid.UU
 	return userId, nil
 }
 
-func (r ContactRepositoryDb) CreateContact(c *Contact) (*Contact, *errs.AppError) {
+// CreateContact Initiate new contact if owner of contact exists
+func (r ContactRepositoryDb) CreateContact(username string, c *Contact) (*Contact, *errs.AppError) {
+
+	// find contact owner
+	ownerId, appErr := r.GetContactOwnerByUsername(username)
+	if appErr != nil {
+		return nil, appErr
+	}
+	c.OwnerId = ownerId
+
 	insertedNumbers := make([]Number, 0)
 	insertedEmails := make([]Email, 0)
 	tx, err := r.client.Begin()
@@ -47,11 +57,11 @@ func (r ContactRepositoryDb) CreateContact(c *Contact) (*Contact, *errs.AppError
 		return nil, errs.NewUnexpectedErr(errs.InternalErr)
 	}
 
-	contactInsertSql := `INSERT INTO contacts(first_name, last_name) VALUES($1, $2) RETURNING id`
-	cRow := tx.QueryRow(contactInsertSql, c.FirstName, c.LastName)
+	contactInsertSql := `INSERT INTO contacts(first_name, last_name) VALUES($1, $2) WHERE owner_id = $3 RETURNING id`
+	cRow := tx.QueryRow(contactInsertSql, c.FirstName, c.LastName, c.OwnerId)
 
-	var cIntegerId int
-	err = cRow.Scan(&cIntegerId)
+	var insertedContactId uuid.UUID
+	err = cRow.Scan(&insertedContactId)
 	if err != nil {
 		txErr := tx.Rollback()
 		if txErr != nil {
@@ -61,8 +71,8 @@ func (r ContactRepositoryDb) CreateContact(c *Contact) (*Contact, *errs.AppError
 		return nil, errs.NewUnexpectedErr(errs.InternalErr)
 	}
 
-	cStringId := strconv.Itoa(cIntegerId)
-	c.Id = cStringId
+	// This will be used for creating contact assets
+	c.Id = insertedContactId
 
 	//inserting new record(s) into numbers
 	insertNumbersSql := `INSERT INTO numbers(contact_id, number, label) VALUES ($1, $2, $3) RETURNING id`
@@ -73,8 +83,8 @@ func (r ContactRepositoryDb) CreateContact(c *Contact) (*Contact, *errs.AppError
 			number.Label,
 		)
 
-		var nIntegerId int
-		err = nRow.Scan(&nIntegerId)
+		var insertedNumberId uuid.UUID
+		err = nRow.Scan(&insertedNumberId)
 
 		if err != nil {
 			txErr := tx.Rollback()
@@ -85,8 +95,7 @@ func (r ContactRepositoryDb) CreateContact(c *Contact) (*Contact, *errs.AppError
 			return nil, errs.NewUnexpectedErr(errs.InternalErr)
 		}
 
-		nStringId := strconv.Itoa(nIntegerId)
-		number.Id = nStringId
+		number.Id = insertedNumberId
 		number.ContactId = c.Id
 		insertedNumbers = append(insertedNumbers, number)
 	}
@@ -96,8 +105,8 @@ func (r ContactRepositoryDb) CreateContact(c *Contact) (*Contact, *errs.AppError
 	for _, email := range c.Emails {
 		eRow := tx.QueryRow(insertEmailSql, c.Id, email.Address)
 
-		var eIntegerId int
-		err = eRow.Scan(&eIntegerId)
+		var insertedEmailId uuid.UUID
+		err = eRow.Scan(&insertedEmailId)
 		if err != nil {
 			txErr := tx.Rollback()
 			if txErr != nil {
@@ -107,8 +116,7 @@ func (r ContactRepositoryDb) CreateContact(c *Contact) (*Contact, *errs.AppError
 			return nil, errs.NewUnexpectedErr(errs.InternalErr)
 		}
 
-		eStringId := strconv.Itoa(eIntegerId)
-		email.Id = eStringId
+		email.Id = insertedEmailId
 		email.ContactId = c.Id
 
 		insertedEmails = append(insertedEmails, email)

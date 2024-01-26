@@ -9,7 +9,7 @@ import (
 // ContactRepository Contact secondary port
 type ContactRepository interface {
 	GetContactOwnerByUsername(username string) (uuid.UUID, *errs.AppError)
-	CreateContact(*Contact) (*Contact, *errs.AppError)
+	CreateContact(string, *Contact) (*Contact, *errs.AppError)
 	CheckContactExistenceById(cId string) *errs.AppError
 	AddNewNumber(n []Number) ([]Number, *errs.AppError)
 	AddNewEmails(e []Email) ([]Email, *errs.AppError)
