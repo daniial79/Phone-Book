@@ -6,7 +6,6 @@ import (
 	"github.com/daniial79/Phone-Book/src/errs"
 	"github.com/daniial79/Phone-Book/src/logger"
 	"github.com/google/uuid"
-	"strconv"
 )
 
 // ContactRepositoryDb Secondary actor
@@ -134,14 +133,14 @@ func (r ContactRepositoryDb) CreateContact(username string, c *Contact) (*Contac
 	return c, nil
 }
 
-func (r ContactRepositoryDb) CheckContactExistenceById(cId string) *errs.AppError {
-	var contactId int
+func (r ContactRepositoryDb) CheckContactExistenceById(cId uuid.UUID) *errs.AppError {
+	var contactId uuid.UUID
 	checkContactSql := `SELECT id FROM contacts WHERE id =  $1`
 	row := r.client.QueryRow(checkContactSql, cId)
 	err := row.Scan(&contactId)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return errs.NewNotFoundErr("contact with such id is not found")
+			return errs.NewNotFoundErr(errs.ContactNotFoundErr)
 		}
 		logger.Error("Error while retrieving contact id for existence check (number repo): " + err.Error())
 		return errs.NewUnexpectedErr(errs.InternalErr)
@@ -163,16 +162,16 @@ func (r ContactRepositoryDb) AddNewNumber(n []Number) ([]Number, *errs.AppError)
 	insertSql := `INSERT INTO numbers(contact_id, number, label) VALUES($1, $2, $3) RETURNING id`
 	for i, number := range n {
 
-		var integerId int
+		var insertedId uuid.UUID
 		row := r.client.QueryRow(insertSql, number.ContactId, number.PhoneNumber, number.Label)
-		err := row.Scan(&integerId)
+		err := row.Scan(&insertedId)
 		if err != nil {
 			logger.Error("Error while retrieving id for last inserted number into existing contact: " + err.Error())
 			return nil, errs.NewUnexpectedErr(errs.InternalErr)
 
 		}
-		lastInsertedId := strconv.Itoa(integerId)
-		number.Id = lastInsertedId
+
+		number.Id = insertedId
 
 		result[i] = number
 
@@ -192,16 +191,15 @@ func (r ContactRepositoryDb) AddNewEmails(e []Email) ([]Email, *errs.AppError) {
 	result := make([]Email, len(e))
 	insertSql := `INSERT INTO emails(contact_id, address) VALUES($1, $2) RETURNING id`
 	for i, email := range e {
-		var integerId int
+		var insertedRecordId uuid.UUID
 		row := r.client.QueryRow(insertSql, email.ContactId, email.Address)
-		err := row.Scan(&integerId)
+		err := row.Scan(&insertedRecordId)
 		if err != nil {
 			logger.Error("Error while retrieving id for last inserted email into existing contact:" + err.Error())
 			return nil, errs.NewUnexpectedErr(errs.InternalErr)
 		}
 
-		lastInsertedId := strconv.Itoa(integerId)
-		email.Id = lastInsertedId
+		email.Id = insertedRecordId
 
 		result[i] = email
 	}
@@ -209,11 +207,16 @@ func (r ContactRepositoryDb) AddNewEmails(e []Email) ([]Email, *errs.AppError) {
 	return result, nil
 }
 
-func (r ContactRepositoryDb) GetAllContacts() ([]Contact, *errs.AppError) {
-	contacts := make([]Contact, 0)
-	selectContactSql := `SELECT * FROM contacts`
+func (r ContactRepositoryDb) GetAllContacts(username string) ([]Contact, *errs.AppError) {
+	ownerId, appErr := r.GetContactOwnerByUsername(username)
+	if appErr != nil {
+		return nil, errs.NewNotFoundErr(errs.UserNotFoundErr)
+	}
 
-	rows, err := r.client.Query(selectContactSql)
+	contacts := make([]Contact, 0)
+	selectContactSql := `SELECT * FROM contacts WHERE owner_id = $1`
+
+	rows, err := r.client.Query(selectContactSql, ownerId)
 	if err != nil {
 		logger.Error("Error while querying contacts table: " + err.Error())
 		return nil, errs.NewUnexpectedErr(errs.InternalErr)

@@ -10,10 +10,10 @@ import (
 type ContactRepository interface {
 	GetContactOwnerByUsername(username string) (uuid.UUID, *errs.AppError)
 	CreateContact(string, *Contact) (*Contact, *errs.AppError)
-	CheckContactExistenceById(cId string) *errs.AppError
+	CheckContactExistenceById(cId uuid.UUID) *errs.AppError
 	AddNewNumber(n []Number) ([]Number, *errs.AppError)
 	AddNewEmails(e []Email) ([]Email, *errs.AppError)
-	GetAllContacts() ([]Contact, *errs.AppError)
+	GetAllContacts(username string) ([]Contact, *errs.AppError)
 	GetContactNumbers(cId string) ([]Number, *errs.AppError)
 	GetContactEmails(cId string) ([]Email, *errs.AppError)
 	DeleteContactEmail(cId, eId string) *errs.AppError

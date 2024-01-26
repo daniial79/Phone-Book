@@ -12,4 +12,5 @@ const (
 	UnauthorizedErr                = "Unauthorized user"
 	CookieNotFoundErr              = "Cookie not found"
 	UserNotFoundErr                = "There is no user with such username"
+	ContactNotFoundErr             = "Contact with such id is not found"
 )
