@@ -235,7 +235,7 @@ func (r ContactRepositoryDb) GetAllContacts(username string) ([]Contact, *errs.A
 	return contacts, nil
 }
 
-func (r ContactRepositoryDb) GetContactNumbers(cId string) ([]Number, *errs.AppError) {
+func (r ContactRepositoryDb) GetContactNumbers(cId uuid.UUID) ([]Number, *errs.AppError) {
 	numbers := make([]Number, 0)
 
 	selectNumbersSql := `SELECT * FROM numbers WHERE contact_id = $1`
@@ -263,7 +263,7 @@ func (r ContactRepositoryDb) GetContactNumbers(cId string) ([]Number, *errs.AppE
 
 }
 
-func (r ContactRepositoryDb) GetContactEmails(cId string) ([]Email, *errs.AppError) {
+func (r ContactRepositoryDb) GetContactEmails(cId uuid.UUID) ([]Email, *errs.AppError) {
 	emails := make([]Email, 0)
 
 	selectEmailsSql := `SELECT * FROM emails WHERE contact_id = $1`

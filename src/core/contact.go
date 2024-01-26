@@ -14,8 +14,8 @@ type ContactRepository interface {
 	AddNewNumber(n []Number) ([]Number, *errs.AppError)
 	AddNewEmails(e []Email) ([]Email, *errs.AppError)
 	GetAllContacts(username string) ([]Contact, *errs.AppError)
-	GetContactNumbers(cId string) ([]Number, *errs.AppError)
-	GetContactEmails(cId string) ([]Email, *errs.AppError)
+	GetContactNumbers(cId uuid.UUID) ([]Number, *errs.AppError)
+	GetContactEmails(cId uuid.UUID) ([]Email, *errs.AppError)
 	DeleteContactEmail(cId, eId string) *errs.AppError
 	DeleteContactPhoneNumber(cId, nId string) *errs.AppError
 	DeleteContact(cId string) *errs.AppError
