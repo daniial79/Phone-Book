@@ -13,4 +13,6 @@ const (
 	CookieNotFoundErr              = "Cookie not found"
 	UserNotFoundErr                = "There is no user with such username"
 	ContactNotFoundErr             = "Contact with such id is not found"
+	EmailNotFoundErr               = "email not found"
+	NumberNotFoundErr              = "phone number not found"
 )

@@ -289,7 +289,7 @@ func (r ContactRepositoryDb) GetContactEmails(cId uuid.UUID) ([]Email, *errs.App
 	return emails, nil
 }
 
-func (r ContactRepositoryDb) DeleteContactEmail(cId, eId string) *errs.AppError {
+func (r ContactRepositoryDb) DeleteContactEmail(cId, eId uuid.UUID) *errs.AppError {
 	deleteQuery := `DELETE FROM emails WHERE id = $1 AND contact_id = $2 RETURNING id`
 
 	row := r.client.QueryRow(deleteQuery, eId, cId)
@@ -298,7 +298,7 @@ func (r ContactRepositoryDb) DeleteContactEmail(cId, eId string) *errs.AppError 
 	err := row.Scan(&deletedEmailId)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return errs.NewNotFoundErr("email not found")
+			return errs.NewNotFoundErr(errs.EmailNotFoundErr)
 		}
 		logger.Error("Error while removing a record from emails table: " + err.Error())
 		return errs.NewUnexpectedErr(errs.InternalErr)
@@ -307,7 +307,7 @@ func (r ContactRepositoryDb) DeleteContactEmail(cId, eId string) *errs.AppError 
 	return nil
 }
 
-func (r ContactRepositoryDb) DeleteContactPhoneNumber(cId, nId string) *errs.AppError {
+func (r ContactRepositoryDb) DeleteContactPhoneNumber(cId, nId uuid.UUID) *errs.AppError {
 	deleteQuery := `DELETE FROM numbers WHERE id = $1 AND contact_id = $2 RETURNING id`
 
 	row := r.client.QueryRow(deleteQuery, nId, cId)
@@ -316,7 +316,7 @@ func (r ContactRepositoryDb) DeleteContactPhoneNumber(cId, nId string) *errs.App
 	err := row.Scan(&deletedNumberId)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return errs.NewNotFoundErr("phone number not found")
+			return errs.NewNotFoundErr(errs.NumberNotFoundErr)
 		}
 		return errs.NewUnexpectedErr(errs.InternalErr)
 	}
@@ -324,7 +324,8 @@ func (r ContactRepositoryDb) DeleteContactPhoneNumber(cId, nId string) *errs.App
 	return nil
 }
 
-func (r ContactRepositoryDb) DeleteContact(cId string) *errs.AppError {
+func (r ContactRepositoryDb) DeleteContact(cId uuid.UUID) *errs.AppError {
+
 	tx, err := r.client.Begin()
 	if err != nil {
 		logger.Error("Error while starting new transaction for cascading deletion of contact: " + err.Error())
@@ -355,7 +356,7 @@ func (r ContactRepositoryDb) DeleteContact(cId string) *errs.AppError {
 		}
 	}
 
-	cDeleteQuery := `DELETE FROM contacts WHERE id = $1 RETURNING id`
+	cDeleteQuery := `DELETE FROM contacts WHERE id = $1 AND owner_id = $2 RETURNING id`
 	row := tx.QueryRow(cDeleteQuery, cId)
 	var deletedContactId int
 
@@ -399,7 +400,7 @@ func (r ContactRepositoryDb) UpdateContactPhoneNumber(newNumber Number) (*Number
 		row = r.client.QueryRow(updateQuery, newPhoneNumber, numberId, contactId)
 	}
 
-	var retrievedId int
+	var retrievedId uuid.UUID
 	err := row.Scan(&retrievedId)
 	if err != nil {
 		if errors.Is(sql.ErrNoRows, err) {
@@ -423,7 +424,7 @@ func (r ContactRepositoryDb) UpdateContactEmail(newEmail Email) (*Email, *errs.A
 
 	updateQuery := `UPDATE emails SET address = $1 WHERE id = $2 AND contact_id = $3 RETURNING id`
 	row := r.client.QueryRow(updateQuery, newAddress, emailId, contactId)
-	var retrievedId int
+	var retrievedId uuid.UUID
 	err := row.Scan(&retrievedId)
 	if err != nil {
 		if errors.Is(sql.ErrNoRows, err) {
