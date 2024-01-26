@@ -11,4 +11,5 @@ const (
 	InvalidRefreshTokenErr         = "Invalid refresh token"
 	UnauthorizedErr                = "Unauthorized user"
 	CookieNotFoundErr              = "Cookie not found"
+	UserNotFoundErr                = "There is no user with such username"
 )

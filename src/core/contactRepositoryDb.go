@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/daniial79/Phone-Book/src/errs"
 	"github.com/daniial79/Phone-Book/src/logger"
+	"github.com/google/uuid"
 	"strconv"
 )
 
@@ -15,6 +16,24 @@ type ContactRepositoryDb struct {
 
 func NewContactRepositoryDb(client *sql.DB) ContactRepositoryDb {
 	return ContactRepositoryDb{client: client}
+}
+
+func (r ContactRepositoryDb) GetContactOwnerByUsername(username string) (uuid.UUID, *errs.AppError) {
+	selectQuery := `SELECT id FROM users WHERE username = $1`
+
+	var userId uuid.UUID
+	row := r.client.QueryRow(selectQuery, username)
+	err := row.Scan(&userId)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return uuid.UUID{}, errs.NewNotFoundErr(errs.UserNotFoundErr)
+		}
+
+		return uuid.UUID{}, errs.NewUnexpectedErr(errs.InternalErr)
+	}
+
+	return userId, nil
 }
 
 func (r ContactRepositoryDb) CreateContact(c *Contact) (*Contact, *errs.AppError) {
