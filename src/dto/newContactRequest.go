@@ -19,7 +19,6 @@ type NewContactRequest struct {
 	LastName     string               `json:"lastname"`
 	PhoneNumbers []PhoneNumberRequest `json:"phoneNumbers"`
 	Emails       []EmailRequest       `json:"emails"`
-	Username     string
 }
 
 func (r NewContactRequest) Validate() *errs.AppError {

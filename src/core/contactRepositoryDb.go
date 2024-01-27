@@ -404,7 +404,7 @@ func (r ContactRepositoryDb) UpdateContactPhoneNumber(newNumber Number) (*Number
 	err := row.Scan(&retrievedId)
 	if err != nil {
 		if errors.Is(sql.ErrNoRows, err) {
-			return nil, errs.NewNotFoundErr("phone number with this id not found")
+			return nil, errs.NewNotFoundErr(errs.NumberNotFoundErr)
 		}
 		logger.Error("Error while updating record in numbers table: " + err.Error())
 		return nil, errs.NewUnexpectedErr(errs.InternalErr)
@@ -458,7 +458,7 @@ func (r ContactRepositoryDb) UpdateContact(newContact Contact) (*Contact, *errs.
 		row = r.client.QueryRow(updateQuery, newLastname, contactId)
 	}
 
-	var retrievedId int
+	var retrievedId uuid.UUID
 	err := row.Scan(&retrievedId)
 	if err != nil {
 		logger.Error("Error while updating record in contact tables: " + err.Error())
