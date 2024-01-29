@@ -23,7 +23,7 @@ services:
       - DB_PORT=5432
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
-      - DB_NAME=phonebook
+      - DB_NAME=postgres
       - SSL_MODE=disable
     ports:
       - '8000:8000'

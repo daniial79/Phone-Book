@@ -56,7 +56,7 @@ func (r ContactRepositoryDb) CreateContact(username string, c *Contact) (*Contac
 		return nil, errs.NewUnexpectedErr(errs.InternalErr)
 	}
 
-	contactInsertSql := `INSERT INTO contacts(first_name, last_name) VALUES($1, $2) WHERE owner_id = $3 RETURNING id`
+	contactInsertSql := `INSERT INTO contacts(first_name, last_name, owner_id) VALUES($1, $2, $3) RETURNING id`
 	cRow := tx.QueryRow(contactInsertSql, c.FirstName, c.LastName, c.OwnerId)
 
 	var insertedContactId uuid.UUID
@@ -214,7 +214,7 @@ func (r ContactRepositoryDb) GetAllContacts(username string) ([]Contact, *errs.A
 	}
 
 	contacts := make([]Contact, 0)
-	selectContactSql := `SELECT * FROM contacts WHERE owner_id = $1`
+	selectContactSql := `SELECT id, first_name, last_name FROM contacts WHERE owner_id = $1`
 
 	rows, err := r.client.Query(selectContactSql, ownerId)
 	if err != nil {

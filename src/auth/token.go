@@ -77,7 +77,7 @@ func ParseJwtWithClaims(tokenString string) (string, *errs.AppError) {
 	}
 
 	if !token.Valid {
-		return "", errs.NewUnAuthorizedErr(errs.InvalidRefreshTokenErr)
+		return "", errs.NewUnAuthorizedErr(errs.InvalidToken)
 	}
 
 	return uc.Username, nil
