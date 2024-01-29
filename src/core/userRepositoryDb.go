@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/daniial79/Phone-Book/src/errs"
 	"github.com/daniial79/Phone-Book/src/logger"
-	"github.com/google/uuid"
 	"github.com/lib/pq"
 )
 
@@ -22,7 +21,7 @@ func (r UserRepositoryDb) CreateUser(u User) (*User, *errs.AppError) {
 	insertSql := `INSERT INTO users(username, password, phone_number, created_at, updated_at) 
 				  VALUES ($1, $2, $3, $4, $5) RETURNING id`
 
-	var insertedId uuid.UUID
+	var insertedId string
 	row := r.client.QueryRow(insertSql, u.Username, u.Password, u.PhoneNumber, u.CreatedAt, u.UpdatedAt)
 
 	if err := row.Scan(&insertedId); err != nil {

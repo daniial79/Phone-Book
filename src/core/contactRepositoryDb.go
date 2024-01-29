@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/daniial79/Phone-Book/src/errs"
 	"github.com/daniial79/Phone-Book/src/logger"
-	"github.com/google/uuid"
 )
 
 // ContactRepositoryDb Secondary actor
@@ -18,19 +17,19 @@ func NewContactRepositoryDb(client *sql.DB) ContactRepositoryDb {
 }
 
 // GetContactOwnerByUsername Check for user existence and user id eventually using username
-func (r ContactRepositoryDb) GetContactOwnerByUsername(username string) (uuid.UUID, *errs.AppError) {
+func (r ContactRepositoryDb) GetContactOwnerByUsername(username string) (string, *errs.AppError) {
 	selectQuery := `SELECT id FROM users WHERE username = $1`
 
-	var userId uuid.UUID
+	var userId string
 	row := r.client.QueryRow(selectQuery, username)
 	err := row.Scan(&userId)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return uuid.UUID{}, errs.NewNotFoundErr(errs.UserNotFoundErr)
+			return "", errs.NewNotFoundErr(errs.UserNotFoundErr)
 		}
 
-		return uuid.UUID{}, errs.NewUnexpectedErr(errs.InternalErr)
+		return "", errs.NewUnexpectedErr(errs.InternalErr)
 	}
 
 	return userId, nil
@@ -59,7 +58,7 @@ func (r ContactRepositoryDb) CreateContact(username string, c *Contact) (*Contac
 	contactInsertSql := `INSERT INTO contacts(first_name, last_name, owner_id) VALUES($1, $2, $3) RETURNING id`
 	cRow := tx.QueryRow(contactInsertSql, c.FirstName, c.LastName, c.OwnerId)
 
-	var insertedContactId uuid.UUID
+	var insertedContactId string
 	err = cRow.Scan(&insertedContactId)
 	if err != nil {
 		txErr := tx.Rollback()
@@ -82,7 +81,7 @@ func (r ContactRepositoryDb) CreateContact(username string, c *Contact) (*Contac
 			number.Label,
 		)
 
-		var insertedNumberId uuid.UUID
+		var insertedNumberId string
 		err = nRow.Scan(&insertedNumberId)
 
 		if err != nil {
@@ -104,7 +103,7 @@ func (r ContactRepositoryDb) CreateContact(username string, c *Contact) (*Contac
 	for _, email := range c.Emails {
 		eRow := tx.QueryRow(insertEmailSql, c.Id, email.Address)
 
-		var insertedEmailId uuid.UUID
+		var insertedEmailId string
 		err = eRow.Scan(&insertedEmailId)
 		if err != nil {
 			txErr := tx.Rollback()
@@ -133,8 +132,8 @@ func (r ContactRepositoryDb) CreateContact(username string, c *Contact) (*Contac
 	return c, nil
 }
 
-func (r ContactRepositoryDb) CheckContactExistenceById(cId uuid.UUID) *errs.AppError {
-	var contactId uuid.UUID
+func (r ContactRepositoryDb) CheckContactExistenceById(cId string) *errs.AppError {
+	var contactId string
 	checkContactSql := `SELECT id FROM contacts WHERE id =  $1`
 	row := r.client.QueryRow(checkContactSql, cId)
 	err := row.Scan(&contactId)
@@ -162,7 +161,7 @@ func (r ContactRepositoryDb) AddNewNumber(n []Number) ([]Number, *errs.AppError)
 	insertSql := `INSERT INTO numbers(contact_id, number, label) VALUES($1, $2, $3) RETURNING id`
 	for i, number := range n {
 
-		var insertedId uuid.UUID
+		var insertedId string
 		row := r.client.QueryRow(insertSql, number.ContactId, number.PhoneNumber, number.Label)
 		err := row.Scan(&insertedId)
 		if err != nil {
@@ -191,7 +190,7 @@ func (r ContactRepositoryDb) AddNewEmails(e []Email) ([]Email, *errs.AppError) {
 	result := make([]Email, len(e))
 	insertSql := `INSERT INTO emails(contact_id, address) VALUES($1, $2) RETURNING id`
 	for i, email := range e {
-		var insertedRecordId uuid.UUID
+		var insertedRecordId string
 		row := r.client.QueryRow(insertSql, email.ContactId, email.Address)
 		err := row.Scan(&insertedRecordId)
 		if err != nil {
@@ -235,7 +234,7 @@ func (r ContactRepositoryDb) GetAllContacts(username string) ([]Contact, *errs.A
 	return contacts, nil
 }
 
-func (r ContactRepositoryDb) GetContactNumbers(cId uuid.UUID) ([]Number, *errs.AppError) {
+func (r ContactRepositoryDb) GetContactNumbers(cId string) ([]Number, *errs.AppError) {
 	numbers := make([]Number, 0)
 
 	selectNumbersSql := `SELECT * FROM numbers WHERE contact_id = $1`
@@ -263,7 +262,7 @@ func (r ContactRepositoryDb) GetContactNumbers(cId uuid.UUID) ([]Number, *errs.A
 
 }
 
-func (r ContactRepositoryDb) GetContactEmails(cId uuid.UUID) ([]Email, *errs.AppError) {
+func (r ContactRepositoryDb) GetContactEmails(cId string) ([]Email, *errs.AppError) {
 	emails := make([]Email, 0)
 
 	selectEmailsSql := `SELECT * FROM emails WHERE contact_id = $1`
@@ -289,7 +288,7 @@ func (r ContactRepositoryDb) GetContactEmails(cId uuid.UUID) ([]Email, *errs.App
 	return emails, nil
 }
 
-func (r ContactRepositoryDb) DeleteContactEmail(cId, eId uuid.UUID) *errs.AppError {
+func (r ContactRepositoryDb) DeleteContactEmail(cId, eId string) *errs.AppError {
 	deleteQuery := `DELETE FROM emails WHERE id = $1 AND contact_id = $2 RETURNING id`
 
 	row := r.client.QueryRow(deleteQuery, eId, cId)
@@ -307,7 +306,7 @@ func (r ContactRepositoryDb) DeleteContactEmail(cId, eId uuid.UUID) *errs.AppErr
 	return nil
 }
 
-func (r ContactRepositoryDb) DeleteContactPhoneNumber(cId, nId uuid.UUID) *errs.AppError {
+func (r ContactRepositoryDb) DeleteContactPhoneNumber(cId, nId string) *errs.AppError {
 	deleteQuery := `DELETE FROM numbers WHERE id = $1 AND contact_id = $2 RETURNING id`
 
 	row := r.client.QueryRow(deleteQuery, nId, cId)
@@ -324,7 +323,7 @@ func (r ContactRepositoryDb) DeleteContactPhoneNumber(cId, nId uuid.UUID) *errs.
 	return nil
 }
 
-func (r ContactRepositoryDb) DeleteContact(cId uuid.UUID) *errs.AppError {
+func (r ContactRepositoryDb) DeleteContact(cId string) *errs.AppError {
 
 	tx, err := r.client.Begin()
 	if err != nil {
@@ -400,7 +399,7 @@ func (r ContactRepositoryDb) UpdateContactPhoneNumber(newNumber Number) (*Number
 		row = r.client.QueryRow(updateQuery, newPhoneNumber, numberId, contactId)
 	}
 
-	var retrievedId uuid.UUID
+	var retrievedId string
 	err := row.Scan(&retrievedId)
 	if err != nil {
 		if errors.Is(sql.ErrNoRows, err) {
@@ -424,7 +423,7 @@ func (r ContactRepositoryDb) UpdateContactEmail(newEmail Email) (*Email, *errs.A
 
 	updateQuery := `UPDATE emails SET address = $1 WHERE id = $2 AND contact_id = $3 RETURNING id`
 	row := r.client.QueryRow(updateQuery, newAddress, emailId, contactId)
-	var retrievedId uuid.UUID
+	var retrievedId string
 	err := row.Scan(&retrievedId)
 	if err != nil {
 		if errors.Is(sql.ErrNoRows, err) {
@@ -458,7 +457,7 @@ func (r ContactRepositoryDb) UpdateContact(newContact Contact) (*Contact, *errs.
 		row = r.client.QueryRow(updateQuery, newLastname, contactId)
 	}
 
-	var retrievedId uuid.UUID
+	var retrievedId string
 	err := row.Scan(&retrievedId)
 	if err != nil {
 		logger.Error("Error while updating record in contact tables: " + err.Error())

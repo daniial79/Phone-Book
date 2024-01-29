@@ -1,9 +1,7 @@
 package dto
 
-import "github.com/google/uuid"
-
 type NewContactResponse struct {
-	Id           uuid.UUID             `json:"id"`
+	Id           string                `json:"id"`
 	FirstName    string                `json:"firstName"`
 	LastName     string                `json:"lastName"`
 	PhoneNumbers []PhoneNumberResponse `json:"phoneNumbers,omitempty"`

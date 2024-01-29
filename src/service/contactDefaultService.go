@@ -4,7 +4,6 @@ import (
 	"github.com/daniial79/Phone-Book/src/core"
 	"github.com/daniial79/Phone-Book/src/dto"
 	"github.com/daniial79/Phone-Book/src/errs"
-	"github.com/google/uuid"
 )
 
 // ContactDefaultService primary actor
@@ -23,14 +22,14 @@ func (s ContactDefaultService) NewContact(username string, requestBody dto.NewCo
 		return nil, appErr
 	}
 
-	coreTypedObject.Id = uuid.UUID{}
+	coreTypedObject.Id = ""
 	coreTypedObject.FirstName = requestBody.FirstName
 	coreTypedObject.LastName = requestBody.LastName
 
 	for _, number := range requestBody.PhoneNumbers {
 		coreTypedObject.PhoneNumbers = append(coreTypedObject.PhoneNumbers, core.Number{
-			Id:          uuid.UUID{},
-			ContactId:   uuid.UUID{},
+			Id:          "",
+			ContactId:   "",
 			PhoneNumber: number.Number,
 			Label:       number.Label,
 		})
@@ -38,8 +37,8 @@ func (s ContactDefaultService) NewContact(username string, requestBody dto.NewCo
 
 	for _, email := range requestBody.Emails {
 		coreTypedObject.Emails = append(coreTypedObject.Emails, core.Email{
-			Id:        uuid.UUID{},
-			ContactId: uuid.UUID{},
+			Id:        "",
+			ContactId: "",
 			Address:   email.Address,
 		})
 	}
@@ -53,7 +52,7 @@ func (s ContactDefaultService) NewContact(username string, requestBody dto.NewCo
 	return response, nil
 }
 
-func (s ContactDefaultService) AddNewNumbers(requestBody []dto.AddNumberRequest, contactId uuid.UUID) ([]dto.AddNumberResponse, *errs.AppError) {
+func (s ContactDefaultService) AddNewNumbers(requestBody []dto.AddNumberRequest, contactId string) ([]dto.AddNumberResponse, *errs.AppError) {
 	for _, r := range requestBody {
 		if appErr := r.Validate(); appErr != nil {
 			return nil, appErr
@@ -64,7 +63,7 @@ func (s ContactDefaultService) AddNewNumbers(requestBody []dto.AddNumberRequest,
 
 	for i, numberRequest := range requestBody {
 		coreTypedNumbers[i] = core.Number{
-			Id:          uuid.UUID{},
+			Id:          "",
 			ContactId:   contactId,
 			PhoneNumber: numberRequest.Number,
 			Label:       numberRequest.Label,
@@ -84,7 +83,7 @@ func (s ContactDefaultService) AddNewNumbers(requestBody []dto.AddNumberRequest,
 	return response, nil
 }
 
-func (s ContactDefaultService) AddNewEmails(requestBody []dto.AddEmailRequest, contactId uuid.UUID) ([]dto.AddEmailResponse, *errs.AppError) {
+func (s ContactDefaultService) AddNewEmails(requestBody []dto.AddEmailRequest, contactId string) ([]dto.AddEmailResponse, *errs.AppError) {
 	coreTypedEmails := make([]core.Email, len(requestBody))
 
 	for _, r := range requestBody {
@@ -95,7 +94,7 @@ func (s ContactDefaultService) AddNewEmails(requestBody []dto.AddEmailRequest, c
 
 	for i, email := range requestBody {
 		coreTypedEmails[i] = core.Email{
-			Id:        uuid.UUID{},
+			Id:        "",
 			ContactId: contactId,
 			Address:   email.Address,
 		}
@@ -132,7 +131,7 @@ func (s ContactDefaultService) GetContacts(username string) ([]dto.NewContactRes
 	return response, nil
 }
 
-func (s ContactDefaultService) GetContactCredentials(cId uuid.UUID) (*dto.ContactCredentialsResponse, *errs.AppError) {
+func (s ContactDefaultService) GetContactCredentials(cId string) (*dto.ContactCredentialsResponse, *errs.AppError) {
 	coreTypedNumbers, err := s.repo.GetContactNumbers(cId)
 	if err != nil {
 		return nil, err
@@ -166,7 +165,7 @@ func (s ContactDefaultService) GetContactCredentials(cId uuid.UUID) (*dto.Contac
 	return &response, nil
 }
 
-func (s ContactDefaultService) DeleteEmailFromContact(cId, eId uuid.UUID) (*dto.NoContentResponse, *errs.AppError) {
+func (s ContactDefaultService) DeleteEmailFromContact(cId, eId string) (*dto.NoContentResponse, *errs.AppError) {
 	if err := s.repo.DeleteContactEmail(cId, eId); err != nil {
 		return nil, err
 	}
@@ -176,7 +175,7 @@ func (s ContactDefaultService) DeleteEmailFromContact(cId, eId uuid.UUID) (*dto.
 	return &response, nil
 }
 
-func (s ContactDefaultService) DeletePhoneNumberFromContact(cId, eId uuid.UUID) (*dto.NoContentResponse, *errs.AppError) {
+func (s ContactDefaultService) DeletePhoneNumberFromContact(cId, eId string) (*dto.NoContentResponse, *errs.AppError) {
 	if err := s.repo.DeleteContactPhoneNumber(cId, eId); err != nil {
 		return nil, err
 	}
@@ -186,7 +185,7 @@ func (s ContactDefaultService) DeletePhoneNumberFromContact(cId, eId uuid.UUID) 
 	return &response, nil
 }
 
-func (s ContactDefaultService) DeleteContact(cId uuid.UUID) (*dto.NoContentResponse, *errs.AppError) {
+func (s ContactDefaultService) DeleteContact(cId string) (*dto.NoContentResponse, *errs.AppError) {
 	if err := s.repo.DeleteContact(cId); err != nil {
 		return nil, err
 	}
@@ -195,7 +194,7 @@ func (s ContactDefaultService) DeleteContact(cId uuid.UUID) (*dto.NoContentRespo
 	return &response, nil
 }
 
-func (s ContactDefaultService) UpdateContactNumber(cId, nId uuid.UUID, requestBody dto.UpdateNumberRequest) (*dto.UpdateNumberResponse, *errs.AppError) {
+func (s ContactDefaultService) UpdateContactNumber(cId, nId string, requestBody dto.UpdateNumberRequest) (*dto.UpdateNumberResponse, *errs.AppError) {
 
 	if appErr := requestBody.Validate(); appErr != nil {
 		return nil, appErr
@@ -218,7 +217,7 @@ func (s ContactDefaultService) UpdateContactNumber(cId, nId uuid.UUID, requestBo
 	return &response, nil
 }
 
-func (s ContactDefaultService) UpdateContactEmail(cId, eId uuid.UUID, requestBody dto.UpdateEmailRequest) (*dto.UpdateEmailResponse, *errs.AppError) {
+func (s ContactDefaultService) UpdateContactEmail(cId, eId string, requestBody dto.UpdateEmailRequest) (*dto.UpdateEmailResponse, *errs.AppError) {
 
 	if appErr := requestBody.Validate(); appErr != nil {
 		return nil, errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
@@ -239,7 +238,7 @@ func (s ContactDefaultService) UpdateContactEmail(cId, eId uuid.UUID, requestBod
 	return &response, nil
 }
 
-func (s ContactDefaultService) UpdateContact(cId uuid.UUID, requestBody dto.UpdateContactRequest) (*dto.UpdateContactResponse, *errs.AppError) {
+func (s ContactDefaultService) UpdateContact(cId string, requestBody dto.UpdateContactRequest) (*dto.UpdateContactResponse, *errs.AppError) {
 
 	if appErr := requestBody.Validate(); appErr != nil {
 		return nil, errs.NewUnProcessableErr(errs.UnprocessableRequestErr)

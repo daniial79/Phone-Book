@@ -1,12 +1,10 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/daniial79/Phone-Book/src/dto"
 	"github.com/daniial79/Phone-Book/src/errs"
 	"github.com/daniial79/Phone-Book/src/logger"
 	"github.com/daniial79/Phone-Book/src/service"
-	"github.com/daniial79/Phone-Book/src/utils"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
@@ -45,17 +43,11 @@ func (c ContactController) NewContact(ctx echo.Context) error {
 }
 
 func (c ContactController) AddNewNumbers(ctx echo.Context) error {
-	contactIdAsString := ctx.Param("contactId")
+	contactId := ctx.Param("contactId")
 	requestsBody := make([]dto.AddNumberRequest, 0)
-
-	fmt.Printf("%s => %d\n", contactIdAsString, len(contactIdAsString))
-	contactId, appErr := utils.ConvertStringToUUID([]byte(contactIdAsString))
-	if appErr != nil {
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
-	}
-
+	
 	if err := ctx.Bind(&requestsBody); err != nil {
-		appErr = errs.NewUnProcessableErr(err.Error())
+		appErr := errs.NewUnProcessableErr(err.Error())
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
 
@@ -68,16 +60,11 @@ func (c ContactController) AddNewNumbers(ctx echo.Context) error {
 }
 
 func (c ContactController) AddNewEmails(ctx echo.Context) error {
-	contactIdAsString := ctx.Param("contactId")
+	contactId := ctx.Param("contactId")
 	request := make([]dto.AddEmailRequest, 0)
 
-	contactId, appErr := utils.ConvertStringToUUID([]byte(contactIdAsString))
-	if appErr != nil {
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
-	}
-
 	if err := ctx.Bind(&request); err != nil {
-		appErr = errs.NewUnProcessableErr(err.Error())
+		appErr := errs.NewUnProcessableErr(err.Error())
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
 
@@ -107,12 +94,7 @@ func (c ContactController) GetContacts(ctx echo.Context) error {
 }
 
 func (c ContactController) GetContactCredentials(ctx echo.Context) error {
-	contactIdAsString := ctx.Param("contactId")
-
-	contactId, appErr := utils.ConvertStringToUUID([]byte(contactIdAsString))
-	if appErr != nil {
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
-	}
+	contactId := ctx.Param("contactId")
 
 	response, appErr := c.service.GetContactCredentials(contactId)
 	if appErr != nil {
@@ -123,18 +105,8 @@ func (c ContactController) GetContactCredentials(ctx echo.Context) error {
 }
 
 func (c ContactController) DeleteEmailFromContact(ctx echo.Context) error {
-	contactIdAsString := ctx.Param("contactId")
-	emailIdAsString := ctx.Param("emailId")
-
-	contactId, appErr := utils.ConvertStringToUUID([]byte(contactIdAsString))
-	if appErr != nil {
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
-	}
-
-	emailId, appErr := utils.ConvertStringToUUID([]byte(emailIdAsString))
-	if appErr != nil {
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
-	}
+	contactId := ctx.Param("contactId")
+	emailId := ctx.Param("emailId")
 
 	response, appErr := c.service.DeleteEmailFromContact(contactId, emailId)
 	if appErr != nil {
@@ -145,18 +117,8 @@ func (c ContactController) DeleteEmailFromContact(ctx echo.Context) error {
 }
 
 func (c ContactController) DeletePhoneNumberFromContact(ctx echo.Context) error {
-	contactIdAsString := ctx.Param("contactId")
-	phoneNumberIdAsString := ctx.Param("phoneNumberId")
-
-	contactId, appErr := utils.ConvertStringToUUID([]byte(contactIdAsString))
-	if appErr != nil {
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
-	}
-
-	phoneNumberId, appErr := utils.ConvertStringToUUID([]byte(phoneNumberIdAsString))
-	if appErr != nil {
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
-	}
+	contactId := ctx.Param("contactId")
+	phoneNumberId := ctx.Param("phoneNumberId")
 
 	response, appErr := c.service.DeletePhoneNumberFromContact(contactId, phoneNumberId)
 	if appErr != nil {
@@ -167,12 +129,7 @@ func (c ContactController) DeletePhoneNumberFromContact(ctx echo.Context) error 
 }
 
 func (c ContactController) DeleteContact(ctx echo.Context) error {
-	contactIdAsString := ctx.Param("contactId")
-
-	contactId, appErr := utils.ConvertStringToUUID([]byte(contactIdAsString))
-	if appErr != nil {
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
-	}
+	contactId := ctx.Param("contactId")
 
 	response, appErr := c.service.DeleteContact(contactId)
 	if appErr != nil {
@@ -183,22 +140,12 @@ func (c ContactController) DeleteContact(ctx echo.Context) error {
 }
 
 func (c ContactController) UpdatePhoneNumber(ctx echo.Context) error {
-	contactIdAsString := ctx.Param("contactId")
-	phoneNumberIdAsString := ctx.Param("phoneNumberId")
-
-	contactId, appErr := utils.ConvertStringToUUID([]byte(contactIdAsString))
-	if appErr != nil {
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
-	}
-
-	phoneNumberId, appErr := utils.ConvertStringToUUID([]byte(phoneNumberIdAsString))
-	if appErr != nil {
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
-	}
+	contactId := ctx.Param("contactId")
+	phoneNumberId := ctx.Param("phoneNumberId")
 
 	var requestBody dto.UpdateNumberRequest
 	if err := ctx.Bind(&requestBody); err != nil {
-		appErr = errs.NewUnProcessableErr(err.Error())
+		appErr := errs.NewUnProcessableErr(err.Error())
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
 
@@ -211,22 +158,12 @@ func (c ContactController) UpdatePhoneNumber(ctx echo.Context) error {
 }
 
 func (c ContactController) UpdateEmail(ctx echo.Context) error {
-	contactIdAsString := ctx.Param("contactId")
-	emailIdAsString := ctx.Param("emailId")
-
-	contactId, appErr := utils.ConvertStringToUUID([]byte(contactIdAsString))
-	if appErr != nil {
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
-	}
-
-	emailId, appErr := utils.ConvertStringToUUID([]byte(emailIdAsString))
-	if appErr != nil {
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
-	}
+	contactId := ctx.Param("contactId")
+	emailId := ctx.Param("emailId")
 
 	var requestBody dto.UpdateEmailRequest
 	if err := ctx.Bind(&requestBody); err != nil {
-		appErr = errs.NewUnProcessableErr(err.Error())
+		appErr := errs.NewUnProcessableErr(err.Error())
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
 
@@ -239,16 +176,11 @@ func (c ContactController) UpdateEmail(ctx echo.Context) error {
 }
 
 func (c ContactController) UpdateContact(ctx echo.Context) error {
-	contactIdAsString := ctx.Param("contactId")
-
-	contactId, appErr := utils.ConvertStringToUUID([]byte(contactIdAsString))
-	if appErr != nil {
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
-	}
+	contactId := ctx.Param("contactId")
 
 	var requestBody dto.UpdateContactRequest
 	if err := ctx.Bind(&requestBody); err != nil {
-		appErr = errs.NewUnProcessableErr(err.Error())
+		appErr := errs.NewUnProcessableErr(err.Error())
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
 	}
 

@@ -3,22 +3,21 @@ package core
 import (
 	"github.com/daniial79/Phone-Book/src/dto"
 	"github.com/daniial79/Phone-Book/src/errs"
-	"github.com/google/uuid"
 )
 
 // ContactRepository Contact secondary port
 type ContactRepository interface {
-	GetContactOwnerByUsername(username string) (uuid.UUID, *errs.AppError)
+	GetContactOwnerByUsername(username string) (string, *errs.AppError)
 	CreateContact(string, *Contact) (*Contact, *errs.AppError)
-	CheckContactExistenceById(cId uuid.UUID) *errs.AppError
+	CheckContactExistenceById(cId string) *errs.AppError
 	AddNewNumber(n []Number) ([]Number, *errs.AppError)
 	AddNewEmails(e []Email) ([]Email, *errs.AppError)
 	GetAllContacts(username string) ([]Contact, *errs.AppError)
-	GetContactNumbers(cId uuid.UUID) ([]Number, *errs.AppError)
-	GetContactEmails(cId uuid.UUID) ([]Email, *errs.AppError)
-	DeleteContactEmail(cId, eId uuid.UUID) *errs.AppError
-	DeleteContactPhoneNumber(cId, nId uuid.UUID) *errs.AppError
-	DeleteContact(cId uuid.UUID) *errs.AppError
+	GetContactNumbers(cId string) ([]Number, *errs.AppError)
+	GetContactEmails(cId string) ([]Email, *errs.AppError)
+	DeleteContactEmail(cId, eId string) *errs.AppError
+	DeleteContactPhoneNumber(cId, nId string) *errs.AppError
+	DeleteContact(cId string) *errs.AppError
 	UpdateContactPhoneNumber(newNumber Number) (*Number, *errs.AppError)
 	UpdateContactEmail(newEmail Email) (*Email, *errs.AppError)
 	UpdateContact(newContact Contact) (*Contact, *errs.AppError)
@@ -26,10 +25,10 @@ type ContactRepository interface {
 
 // Contact contact core object definition
 type Contact struct {
-	Id           uuid.UUID `db:"id"`
-	OwnerId      uuid.UUID `db:"owner_id"`
-	FirstName    string    `db:"first_name"`
-	LastName     string    `db:"last_name"`
+	Id           string `db:"id"`
+	OwnerId      string `db:"owner_id"`
+	FirstName    string `db:"first_name"`
+	LastName     string `db:"last_name"`
 	PhoneNumbers []Number
 	Emails       []Email
 }

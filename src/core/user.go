@@ -3,7 +3,6 @@ package core
 import (
 	"github.com/daniial79/Phone-Book/src/dto"
 	"github.com/daniial79/Phone-Book/src/errs"
-	"github.com/google/uuid"
 )
 
 type UserRepository interface {
@@ -12,7 +11,7 @@ type UserRepository interface {
 }
 
 type User struct {
-	Id          uuid.UUID `db:"id"`
+	Id          string `db:"id"`
 	Username    string
 	Password    string
 	PhoneNumber string `db:"phone_number"`
