@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/daniial79/Phone-Book/src/errs"
 	"github.com/daniial79/Phone-Book/src/logger"
+	"github.com/daniial79/Phone-Book/src/utils"
 )
 
 // ContactRepositoryDb Secondary actor
@@ -26,10 +27,10 @@ func (r ContactRepositoryDb) GetContactOwnerByUsername(username string) (string,
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return "", errs.NewNotFoundErr(errs.UserNotFoundErr)
+			return utils.EmptyString, errs.NewNotFoundErr(errs.UserNotFoundErr)
 		}
 
-		return "", errs.NewUnexpectedErr(errs.InternalErr)
+		return utils.EmptyString, errs.NewUnexpectedErr(errs.InternalErr)
 	}
 
 	return userId, nil
@@ -388,13 +389,13 @@ func (r ContactRepositoryDb) UpdateContactPhoneNumber(newNumber Number) (*Number
 	}
 
 	var row *sql.Row
-	if newPhoneNumber != "" && newLabel != "" {
+	if newPhoneNumber != utils.EmptyString && newLabel != utils.EmptyString {
 		updateQuery := `UPDATE numbers SET number = $1, label = $2 WHERE id = $3 AND contact_id = $4 RETURNING id`
 		row = r.client.QueryRow(updateQuery, newPhoneNumber, newLabel, numberId, contactId)
-	} else if newPhoneNumber == "" && newLabel != "" {
+	} else if newPhoneNumber == utils.EmptyString && newLabel != utils.EmptyString {
 		updateQuery := `UPDATE numbers SET label = $1 WHERE id = $2 AND contact_id = $3 RETURNING id`
 		row = r.client.QueryRow(updateQuery, newLabel, numberId, contactId)
-	} else if newPhoneNumber != "" && newLabel == "" {
+	} else if newPhoneNumber != utils.EmptyString && newLabel == utils.EmptyString {
 		updateQuery := `UPDATE numbers SET number = $1 WHERE id = $2 AND contact_id = $3 RETURNING id`
 		row = r.client.QueryRow(updateQuery, newPhoneNumber, numberId, contactId)
 	}
@@ -446,13 +447,13 @@ func (r ContactRepositoryDb) UpdateContact(newContact Contact) (*Contact, *errs.
 	}
 
 	var row *sql.Row
-	if newFirstname != "" && newLastname != "" {
+	if newFirstname != utils.EmptyString && newLastname != utils.EmptyString {
 		updateQuery := `UPDATE contacts SET first_name = $1, last_name = $2 WHERE id = $3 RETURNING id`
 		row = r.client.QueryRow(updateQuery, newFirstname, newLastname, contactId)
-	} else if newFirstname != "" && newLastname == "" {
+	} else if newFirstname != utils.EmptyString && newLastname == utils.EmptyString {
 		updateQuery := `UPDATE contacts SET first_name = $1 WHERE id = $2 RETURNING id`
 		row = r.client.QueryRow(updateQuery, newFirstname, contactId)
-	} else if newFirstname == "" && newLastname != "" {
+	} else if newFirstname == utils.EmptyString && newLastname != utils.EmptyString {
 		updateQuery := `UPDATE contacts SET last_name = $1 WHERE id = $2 RETURNING id`
 		row = r.client.QueryRow(updateQuery, newLastname, contactId)
 	}

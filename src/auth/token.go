@@ -35,7 +35,7 @@ func generateToken(
 	stringToken, err := token.SignedString([]byte(config.GetJwtKey()))
 	if err != nil {
 		logger.Error("Error while generating string token")
-		return "", errs.NewUnexpectedErr(errs.InternalErr)
+		return utils.EmptyString, errs.NewUnexpectedErr(errs.InternalErr)
 	}
 
 	return stringToken, nil
@@ -46,7 +46,7 @@ func NewAccessToken(username string) (string, *errs.AppError) {
 	accessToken, err := generateToken(username, expirationTime)
 
 	if err != nil {
-		return "", err
+		return utils.EmptyString, err
 	}
 
 	return accessToken, nil
@@ -57,7 +57,7 @@ func NewRefreshToken(username string) (string, *errs.AppError) {
 	refreshToken, err := generateToken(username, expirationTime)
 
 	if err != nil {
-		return "", err
+		return utils.EmptyString, err
 	}
 
 	return refreshToken, nil
@@ -71,13 +71,13 @@ func ParseJwtWithClaims(tokenString string) (string, *errs.AppError) {
 
 	if err != nil {
 		if errors.Is(err, jwt.ErrSignatureInvalid) {
-			return "", errs.NewUnAuthorizedErr(errs.UnauthorizedErr)
+			return utils.EmptyString, errs.NewUnAuthorizedErr(errs.UnauthorizedErr)
 		}
-		return "", errs.NewBadRequestErr(errs.BadRequestErr)
+		return utils.EmptyString, errs.NewBadRequestErr(errs.BadRequestErr)
 	}
 
 	if !token.Valid {
-		return "", errs.NewUnAuthorizedErr(errs.InvalidToken)
+		return utils.EmptyString, errs.NewUnAuthorizedErr(errs.InvalidToken)
 	}
 
 	return uc.Username, nil

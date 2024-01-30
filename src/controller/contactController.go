@@ -5,6 +5,7 @@ import (
 	"github.com/daniial79/Phone-Book/src/errs"
 	"github.com/daniial79/Phone-Book/src/logger"
 	"github.com/daniial79/Phone-Book/src/service"
+	"github.com/daniial79/Phone-Book/src/utils"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
@@ -24,39 +25,39 @@ func (c ContactController) NewContact(ctx echo.Context) error {
 
 	if err := ctx.Bind(&requestBody); err != nil {
 		appErr := errs.NewUnProcessableErr(err.Error())
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
 
 	username, isThere := ctx.Get("username").(string)
 	if !isThere {
 		logger.Error("username is not embedded inside controller's context")
 		appErr := errs.NewUnexpectedErr(errs.BadRequestErr)
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
 
 	response, err := c.service.NewContact(username, requestBody)
 	if err != nil {
-		return ctx.JSONPretty(err.StatusCode, err.AsMessage(), "  ")
+		return ctx.JSONPretty(err.StatusCode, err.AsMessage(), utils.JsonIndentation)
 	}
 
-	return ctx.JSONPretty(http.StatusCreated, response, "  ")
+	return ctx.JSONPretty(http.StatusCreated, response, utils.JsonIndentation)
 }
 
 func (c ContactController) AddNewNumbers(ctx echo.Context) error {
 	contactId := ctx.Param("contactId")
 	requestsBody := make([]dto.AddNumberRequest, 0)
-	
+
 	if err := ctx.Bind(&requestsBody); err != nil {
 		appErr := errs.NewUnProcessableErr(err.Error())
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
 
 	response, err := c.service.AddNewNumbers(requestsBody, contactId)
 	if err != nil {
-		return ctx.JSONPretty(err.StatusCode, err.AsMessage(), "  ")
+		return ctx.JSONPretty(err.StatusCode, err.AsMessage(), utils.JsonIndentation)
 	}
 
-	return ctx.JSONPretty(http.StatusCreated, response, "  ")
+	return ctx.JSONPretty(http.StatusCreated, response, utils.JsonIndentation)
 }
 
 func (c ContactController) AddNewEmails(ctx echo.Context) error {
@@ -65,15 +66,15 @@ func (c ContactController) AddNewEmails(ctx echo.Context) error {
 
 	if err := ctx.Bind(&request); err != nil {
 		appErr := errs.NewUnProcessableErr(err.Error())
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
 
 	response, err := c.service.AddNewEmails(request, contactId)
 	if err != nil {
-		return ctx.JSONPretty(err.StatusCode, err.AsMessage(), "  ")
+		return ctx.JSONPretty(err.StatusCode, err.AsMessage(), utils.JsonIndentation)
 	}
 
-	return ctx.JSONPretty(http.StatusCreated, response, "  ")
+	return ctx.JSONPretty(http.StatusCreated, response, utils.JsonIndentation)
 }
 
 func (c ContactController) GetContacts(ctx echo.Context) error {
@@ -82,15 +83,15 @@ func (c ContactController) GetContacts(ctx echo.Context) error {
 	if !isThere {
 		logger.Error("username is not embedded inside controller's context")
 		appErr := errs.NewUnexpectedErr(errs.BadRequestErr)
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
 
 	response, appErr := c.service.GetContacts(username)
 	if appErr != nil {
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
 
-	return ctx.JSONPretty(http.StatusOK, response, "  ")
+	return ctx.JSONPretty(http.StatusOK, response, utils.JsonIndentation)
 }
 
 func (c ContactController) GetContactCredentials(ctx echo.Context) error {
@@ -98,10 +99,10 @@ func (c ContactController) GetContactCredentials(ctx echo.Context) error {
 
 	response, appErr := c.service.GetContactCredentials(contactId)
 	if appErr != nil {
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
 
-	return ctx.JSONPretty(http.StatusOK, response, "  ")
+	return ctx.JSONPretty(http.StatusOK, response, utils.JsonIndentation)
 }
 
 func (c ContactController) DeleteEmailFromContact(ctx echo.Context) error {
@@ -110,10 +111,10 @@ func (c ContactController) DeleteEmailFromContact(ctx echo.Context) error {
 
 	response, appErr := c.service.DeleteEmailFromContact(contactId, emailId)
 	if appErr != nil {
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
 
-	return ctx.JSONPretty(http.StatusNoContent, response, "  ")
+	return ctx.JSONPretty(http.StatusNoContent, response, utils.JsonIndentation)
 }
 
 func (c ContactController) DeletePhoneNumberFromContact(ctx echo.Context) error {
@@ -122,10 +123,10 @@ func (c ContactController) DeletePhoneNumberFromContact(ctx echo.Context) error 
 
 	response, appErr := c.service.DeletePhoneNumberFromContact(contactId, phoneNumberId)
 	if appErr != nil {
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
 
-	return ctx.JSONPretty(http.StatusNoContent, response, "  ")
+	return ctx.JSONPretty(http.StatusNoContent, response, utils.JsonIndentation)
 }
 
 func (c ContactController) DeleteContact(ctx echo.Context) error {
@@ -133,10 +134,10 @@ func (c ContactController) DeleteContact(ctx echo.Context) error {
 
 	response, appErr := c.service.DeleteContact(contactId)
 	if appErr != nil {
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
 
-	return ctx.JSONPretty(http.StatusNoContent, response, "  ")
+	return ctx.JSONPretty(http.StatusNoContent, response, utils.JsonIndentation)
 }
 
 func (c ContactController) UpdatePhoneNumber(ctx echo.Context) error {
@@ -146,7 +147,7 @@ func (c ContactController) UpdatePhoneNumber(ctx echo.Context) error {
 	var requestBody dto.UpdateNumberRequest
 	if err := ctx.Bind(&requestBody); err != nil {
 		appErr := errs.NewUnProcessableErr(err.Error())
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
 
 	response, appErr := c.service.UpdateContactNumber(contactId, phoneNumberId, requestBody)
@@ -154,7 +155,7 @@ func (c ContactController) UpdatePhoneNumber(ctx echo.Context) error {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), " ")
 	}
 
-	return ctx.JSONPretty(http.StatusOK, response, "  ")
+	return ctx.JSONPretty(http.StatusOK, response, utils.JsonIndentation)
 }
 
 func (c ContactController) UpdateEmail(ctx echo.Context) error {
@@ -164,7 +165,7 @@ func (c ContactController) UpdateEmail(ctx echo.Context) error {
 	var requestBody dto.UpdateEmailRequest
 	if err := ctx.Bind(&requestBody); err != nil {
 		appErr := errs.NewUnProcessableErr(err.Error())
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
 
 	response, appErr := c.service.UpdateContactEmail(contactId, emailId, requestBody)
@@ -172,7 +173,7 @@ func (c ContactController) UpdateEmail(ctx echo.Context) error {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), " ")
 	}
 
-	return ctx.JSONPretty(http.StatusOK, response, "  ")
+	return ctx.JSONPretty(http.StatusOK, response, utils.JsonIndentation)
 }
 
 func (c ContactController) UpdateContact(ctx echo.Context) error {
@@ -181,7 +182,7 @@ func (c ContactController) UpdateContact(ctx echo.Context) error {
 	var requestBody dto.UpdateContactRequest
 	if err := ctx.Bind(&requestBody); err != nil {
 		appErr := errs.NewUnProcessableErr(err.Error())
-		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), "  ")
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
 
 	response, appErr := c.service.UpdateContact(contactId, requestBody)
@@ -189,5 +190,5 @@ func (c ContactController) UpdateContact(ctx echo.Context) error {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), " ")
 	}
 
-	return ctx.JSONPretty(http.StatusOK, response, "  ")
+	return ctx.JSONPretty(http.StatusOK, response, utils.JsonIndentation)
 }

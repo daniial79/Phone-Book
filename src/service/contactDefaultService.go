@@ -4,6 +4,7 @@ import (
 	"github.com/daniial79/Phone-Book/src/core"
 	"github.com/daniial79/Phone-Book/src/dto"
 	"github.com/daniial79/Phone-Book/src/errs"
+	"github.com/daniial79/Phone-Book/src/utils"
 )
 
 // ContactDefaultService primary actor
@@ -22,14 +23,14 @@ func (s ContactDefaultService) NewContact(username string, requestBody dto.NewCo
 		return nil, appErr
 	}
 
-	coreTypedObject.Id = ""
+	coreTypedObject.Id = utils.EmptyString
 	coreTypedObject.FirstName = requestBody.FirstName
 	coreTypedObject.LastName = requestBody.LastName
 
 	for _, number := range requestBody.PhoneNumbers {
 		coreTypedObject.PhoneNumbers = append(coreTypedObject.PhoneNumbers, core.Number{
-			Id:          "",
-			ContactId:   "",
+			Id:          utils.EmptyString,
+			ContactId:   utils.EmptyString,
 			PhoneNumber: number.Number,
 			Label:       number.Label,
 		})
@@ -37,8 +38,8 @@ func (s ContactDefaultService) NewContact(username string, requestBody dto.NewCo
 
 	for _, email := range requestBody.Emails {
 		coreTypedObject.Emails = append(coreTypedObject.Emails, core.Email{
-			Id:        "",
-			ContactId: "",
+			Id:        utils.EmptyString,
+			ContactId: utils.EmptyString,
 			Address:   email.Address,
 		})
 	}
@@ -63,7 +64,7 @@ func (s ContactDefaultService) AddNewNumbers(requestBody []dto.AddNumberRequest,
 
 	for i, numberRequest := range requestBody {
 		coreTypedNumbers[i] = core.Number{
-			Id:          "",
+			Id:          utils.EmptyString,
 			ContactId:   contactId,
 			PhoneNumber: numberRequest.Number,
 			Label:       numberRequest.Label,
@@ -94,7 +95,7 @@ func (s ContactDefaultService) AddNewEmails(requestBody []dto.AddEmailRequest, c
 
 	for i, email := range requestBody {
 		coreTypedEmails[i] = core.Email{
-			Id:        "",
+			Id:        utils.EmptyString,
 			ContactId: contactId,
 			Address:   email.Address,
 		}

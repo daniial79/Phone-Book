@@ -15,5 +15,4 @@ const (
 	ContactNotFoundErr             = "Contact with such id is not found"
 	EmailNotFoundErr               = "email not found"
 	NumberNotFoundErr              = "phone number not found"
-	InvalidIdErr                   = "provided Id in url parameter is invalid"
 )
