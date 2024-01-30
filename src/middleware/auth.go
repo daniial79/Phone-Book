@@ -11,7 +11,7 @@ import (
 
 var CheckAccessToken echo.MiddlewareFunc = func(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		cookie, err := ctx.Cookie("Access-Token")
+		cookie, err := ctx.Cookie(utils.AccessTokenKey)
 		if err != nil {
 			if errors.Is(err, http.ErrNoCookie) {
 				appErr := errs.NewBadRequestErr(errs.CookieNotFoundErr)

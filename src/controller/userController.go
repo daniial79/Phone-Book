@@ -37,13 +37,13 @@ func (c UserController) SignUpController(ctx echo.Context) error {
 	if appErr != nil {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
-	auth.SetAuthCookie(&ctx, accessToken, "Access-Token", utils.NewAccessTokenExpTime())
+	auth.SetAuthCookie(&ctx, accessToken, utils.AccessTokenKey, utils.NewAccessTokenExpTime())
 
 	refreshToken, appErr := auth.NewRefreshToken(requestBody.Username)
 	if appErr != nil {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
-	auth.SetAuthCookie(&ctx, refreshToken, "Refresh-Token", utils.NewRefreshTokenExpTime())
+	auth.SetAuthCookie(&ctx, refreshToken, utils.RefreshTokenKey, utils.NewRefreshTokenExpTime())
 
 	return ctx.JSONPretty(http.StatusCreated, response, utils.JsonIndentation)
 }
@@ -64,21 +64,21 @@ func (c UserController) LogInController(ctx echo.Context) error {
 	if appErr != nil {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
-	auth.SetAuthCookie(&ctx, accessToken, "Access-Token", utils.NewAccessTokenExpTime())
+	auth.SetAuthCookie(&ctx, accessToken, utils.AccessTokenKey, utils.NewAccessTokenExpTime())
 
 	refreshToken, appErr := auth.NewRefreshToken(requestBody.Username)
 	if appErr != nil {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
-	auth.SetAuthCookie(&ctx, refreshToken, "Refresh-Token", utils.NewRefreshTokenExpTime())
+	auth.SetAuthCookie(&ctx, refreshToken, utils.RefreshTokenKey, utils.NewRefreshTokenExpTime())
 
 	return ctx.JSONPretty(http.StatusOK, response, utils.JsonIndentation)
 }
 
 func (c UserController) RefreshTokenController(ctx echo.Context) error {
-	cookie, err := ctx.Cookie("Refresh-Token")
+	cookie, err := ctx.Cookie(utils.RefreshTokenKey)
 	if errors.Is(err, http.ErrNoCookie) {
-		appErr := errs.NewUnAuthorizedErr("Refresh cookie not found")
+		appErr := errs.NewUnAuthorizedErr(errs.CookieNotFoundErr)
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
 
@@ -93,6 +93,6 @@ func (c UserController) RefreshTokenController(ctx echo.Context) error {
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
 
-	auth.SetAuthCookie(&ctx, accessToken, "Access-Token", utils.NewAccessTokenExpTime())
+	auth.SetAuthCookie(&ctx, accessToken, utils.AccessTokenKey, utils.NewAccessTokenExpTime())
 	return ctx.JSONPretty(http.StatusOK, dto.NoContentResponse{}, utils.JsonIndentation)
 }
