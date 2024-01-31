@@ -1,12 +1,16 @@
 -- Adding Third-Party modules
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+-- Custom types
+CREATE TYPE role AS ENUM ('user', 'admin');
+
 -- Users table definition
 CREATE TABLE IF NOT EXISTS users (
     id UUID DEFAULT uuid_generate_v4(),
-    username VARCHAR(50),
+    username VARCHAR(50) UNIQUE,
     password VARCHAR(128),
     phone_number VARCHAR(11),
+    user_role role DEFAULT 'user',
     created_at DATE,
     updated_at DATE,
 

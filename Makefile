@@ -1,13 +1,13 @@
 createdb:
-	docker exec -it phone-book-db-1 createdb --username=postgres --owner=postgres phonebook
+	docker exec -it phone-book-db-1 createdb --username=postgres --owner=postgres postgres
 
 dropdb:
-	docker exec -it phone-book-db-1 dropdb phonebook
+	docker exec -it phone-book-db-1 dropdb postgres
 
 migrateup:
-	migrate -path src/db/migrations -database "postgresql://postgres:postgres@localhost:5432/phonebook?sslmode=disable" -verbose up
+	migrate -path src/db/migrations -database "postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable" -verbose up
 
 migratedown:
-	migrate -path src/db/migrations -database "postgresql://postgres:postgres@localhost:5432/phonebook?sslmode=disable" -verbose down
+	migrate -path src/db/migrations -database "postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable" -verbose down
 
 .PHONY: createdb dropdb migrateup migratedown
