@@ -83,12 +83,7 @@ func ParseJwtWithClaims(tokenString string) (string, *errs.AppError) {
 	return uc.Username, nil
 }
 
-func SetAuthCookie(
-	ctx *echo.Context,
-	stringToken string,
-	name string,
-	expAt time.Time,
-) {
+func SetAuthCookie(ctx *echo.Context, stringToken string, name string, expAt time.Time) {
 	cookie := new(http.Cookie)
 	cookie.Name = name
 	cookie.Value = stringToken
@@ -97,4 +92,24 @@ func SetAuthCookie(
 	cookie.HttpOnly = true
 
 	(*ctx).SetCookie(cookie)
+}
+
+func ExpireAuthCookies(ctx *echo.Context) *errs.AppError {
+	refreshCookie, err := (*ctx).Cookie(utils.RefreshTokenKey)
+	if err != nil {
+		if errors.Is(err, http.ErrNoCookie) {
+			return errs.NewNotFoundErr(errs.CookieNotFoundErr)
+		}
+	}
+	refreshCookie.Expires = time.Now()
+
+	accessCookie, err := (*ctx).Cookie(utils.AccessTokenKey)
+	if err != nil {
+		if errors.Is(err, http.ErrNoCookie) {
+			return errs.NewNotFoundErr(errs.CookieNotFoundErr)
+		}
+	}
+	accessCookie.Expires = time.Now()
+
+	return nil
 }

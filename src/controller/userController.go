@@ -96,3 +96,12 @@ func (c UserController) RefreshTokenController(ctx echo.Context) error {
 	auth.SetAuthCookie(&ctx, accessToken, utils.AccessTokenKey, utils.NewAccessTokenExpTime())
 	return ctx.JSONPretty(http.StatusOK, dto.NoContentResponse{}, utils.JsonIndentation)
 }
+
+func (c UserController) LogOutController(ctx echo.Context) error {
+	appErr := auth.ExpireAuthCookies(&ctx)
+	if appErr != nil {
+		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
+	}
+
+	return ctx.JSON(http.StatusNoContent, dto.NoContentResponse{})
+}

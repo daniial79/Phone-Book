@@ -14,9 +14,10 @@ func SetUserRoutes(e *echo.Echo, db *sql.DB) {
 
 	userController := controller.NewUserController(userService)
 
-	r := e.Group("/api/v1")
+	r := e.Group("/api/v1/users")
 
-	r.POST("/users/signup", userController.SignUpController)
-	r.POST("/users/login", userController.LogInController)
-	r.POST("/users/refresh", userController.RefreshTokenController)
+	r.POST("/signup", userController.SignUpController)
+	r.POST("/login", userController.LogInController)
+	r.POST("/refresh", userController.RefreshTokenController)
+	r.POST("/logout", userController.LogOutController)
 }
