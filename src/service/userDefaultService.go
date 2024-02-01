@@ -30,10 +30,13 @@ func (s UserDefaultService) SignUpUser(requestBody dto.CreateUserRequest) (*dto.
 		return nil, errs.NewUnexpectedErr(errs.InternalErr)
 	}
 
+	requestBody.Role = requestBody.SetUserRole()
+
 	coreTypedUser := core.User{
 		Username:    requestBody.Username,
 		Password:    hashedPassword,
 		PhoneNumber: requestBody.PhoneNumber,
+		Role:        requestBody.Role,
 		CreatedAt:   utils.NewCurrentDate(),
 		UpdatedAt:   utils.NewCurrentDate(),
 	}

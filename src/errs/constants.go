@@ -15,4 +15,5 @@ const (
 	ContactNotFoundErr             = "Contact with such id is not found"
 	EmailNotFoundErr               = "email not found"
 	NumberNotFoundErr              = "phone number not found"
+	UserRoleErr                    = "user role must be 'admin' or 'user'"
 )

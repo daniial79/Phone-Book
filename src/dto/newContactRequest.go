@@ -1,6 +1,9 @@
 package dto
 
-import "github.com/daniial79/Phone-Book/src/errs"
+import (
+	"github.com/daniial79/Phone-Book/src/errs"
+	"github.com/daniial79/Phone-Book/src/utils"
+)
 
 // PhoneNumberRequest this phone number request is for initiating new contact
 type PhoneNumberRequest struct {
@@ -23,8 +26,8 @@ type NewContactRequest struct {
 
 func (r NewContactRequest) Validate() *errs.AppError {
 
-	if r.FirstName == "" &&
-		r.LastName == "" &&
+	if r.FirstName == utils.EmptyString &&
+		r.LastName == utils.EmptyString &&
 		len(r.PhoneNumbers) == 0 &&
 		len(r.PhoneNumbers) == 0 {
 

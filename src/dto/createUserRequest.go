@@ -1,23 +1,27 @@
 package dto
 
-import "github.com/daniial79/Phone-Book/src/errs"
+import (
+	"github.com/daniial79/Phone-Book/src/errs"
+	"github.com/daniial79/Phone-Book/src/utils"
+)
 
 type CreateUserRequest struct {
 	Username    string `json:"username"`
 	Password    string `json:"password"`
 	PhoneNumber string `json:"phone_number"`
+	Role        string `json:"role,omitempty"`
 }
 
 func (r CreateUserRequest) Validate() *errs.AppError {
-	if r.Username == "" &&
-		r.Password == "" &&
-		r.PhoneNumber == "" {
+	if r.Username == utils.EmptyString &&
+		r.Password == utils.EmptyString &&
+		r.PhoneNumber == utils.EmptyString {
 		return errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
 	}
 
-	if r.Username == "" ||
-		r.Password == "" ||
-		r.PhoneNumber == "" {
+	if r.Username == utils.EmptyString ||
+		r.Password == utils.EmptyString ||
+		r.PhoneNumber == utils.EmptyString {
 		return errs.NewCredentialsErr(errs.InsufficientCredentialsErr)
 	}
 
@@ -25,5 +29,17 @@ func (r CreateUserRequest) Validate() *errs.AppError {
 		return errs.NewUnProcessableErr(errs.ShortPasswordErr)
 	}
 
+	if r.Role != utils.AdminROleString && r.Role != utils.UserRoleString {
+		return errs.NewUnProcessableErr(errs.UserRoleErr)
+	}
+
 	return nil
+}
+
+func (r CreateUserRequest) SetUserRole() string {
+	if r.Role == utils.EmptyString {
+		return utils.UserRoleString
+	}
+
+	return utils.AdminROleString
 }

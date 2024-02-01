@@ -5,4 +5,6 @@ const (
 	RefreshTokenKey = "Refresh-Token"
 	JsonIndentation = "  "
 	EmptyString     = ""
+	UserRoleString  = "user"
+	AdminROleString = "admin"
 )
