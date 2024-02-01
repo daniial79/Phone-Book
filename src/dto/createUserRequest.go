@@ -29,6 +29,14 @@ func (r CreateUserRequest) Validate() *errs.AppError {
 		return errs.NewUnProcessableErr(errs.ShortPasswordErr)
 	}
 
+	if r.Role == utils.EmptyString || r.Role == utils.UserRoleString {
+		return nil
+	}
+
+	if r.Role != utils.AdminRoleString {
+		return errs.NewUnProcessableErr(errs.UserRoleErr)
+	}
+
 	return nil
 }
 

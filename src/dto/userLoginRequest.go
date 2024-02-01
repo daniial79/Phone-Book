@@ -1,6 +1,9 @@
 package dto
 
-import "github.com/daniial79/Phone-Book/src/errs"
+import (
+	"github.com/daniial79/Phone-Book/src/errs"
+	"github.com/daniial79/Phone-Book/src/utils"
+)
 
 type UserLoginRequest struct {
 	Username string `json:"username"`
@@ -8,11 +11,11 @@ type UserLoginRequest struct {
 }
 
 func (r UserLoginRequest) Validate() *errs.AppError {
-	if r.Username == "" && r.Password == "" {
+	if r.Username == utils.EmptyString && r.Password == utils.EmptyString {
 		return errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
 	}
 
-	if r.Username == "" || r.Password == "" {
+	if r.Username == utils.EmptyString || r.Password == utils.EmptyString {
 		return errs.NewCredentialsErr(errs.InsufficientCredentialsErr)
 	}
 
