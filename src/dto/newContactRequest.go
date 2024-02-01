@@ -1,5 +1,10 @@
 package dto
 
+import (
+	"github.com/daniial79/Phone-Book/src/errs"
+	"github.com/daniial79/Phone-Book/src/utils"
+)
+
 // PhoneNumberRequest this phone number request is for initiating new contact
 type PhoneNumberRequest struct {
 	Number string `json:"number"`
@@ -19,17 +24,16 @@ type NewContactRequest struct {
 	Emails       []EmailRequest       `json:"emails"`
 }
 
-func (r *NewContactRequest) IsValid() bool {
-	requestLiteralValue := *r
+func (r NewContactRequest) Validate() *errs.AppError {
 
-	if requestLiteralValue.FirstName == "" &&
-		requestLiteralValue.LastName == "" &&
-		len(requestLiteralValue.PhoneNumbers) == 0 &&
-		len(requestLiteralValue.PhoneNumbers) == 0 {
+	if r.FirstName == utils.EmptyString &&
+		r.LastName == utils.EmptyString &&
+		len(r.PhoneNumbers) == 0 &&
+		len(r.PhoneNumbers) == 0 {
 
-		return false
+		return errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
 
 	}
 
-	return true
+	return nil
 }

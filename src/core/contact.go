@@ -7,11 +7,12 @@ import (
 
 // ContactRepository Contact secondary port
 type ContactRepository interface {
-	CreateContact(*Contact) (*Contact, *errs.AppError)
+	GetContactOwnerByUsername(username string) (string, *errs.AppError)
+	CreateContact(string, *Contact) (*Contact, *errs.AppError)
 	CheckContactExistenceById(cId string) *errs.AppError
 	AddNewNumber(n []Number) ([]Number, *errs.AppError)
 	AddNewEmails(e []Email) ([]Email, *errs.AppError)
-	GetAllContacts() ([]Contact, *errs.AppError)
+	GetAllContacts(username string) ([]Contact, *errs.AppError)
 	GetContactNumbers(cId string) ([]Number, *errs.AppError)
 	GetContactEmails(cId string) ([]Email, *errs.AppError)
 	DeleteContactEmail(cId, eId string) *errs.AppError
@@ -25,6 +26,7 @@ type ContactRepository interface {
 // Contact contact core object definition
 type Contact struct {
 	Id           string `db:"id"`
+	OwnerId      string `db:"owner_id"`
 	FirstName    string `db:"first_name"`
 	LastName     string `db:"last_name"`
 	PhoneNumbers []Number

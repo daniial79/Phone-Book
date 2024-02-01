@@ -14,10 +14,11 @@ func Start() {
 	dbClient := db.GetNewConnection()
 	e := echo.New()
 
+	routes.SetUserRoutes(e, dbClient)
 	routes.SetContactRoutes(e, dbClient)
 
 	logger.Info("Server is up and running on port 8000...")
-	if err := e.Start(config.AppConf.GetPort()); err != nil {
+	if err := e.Start(config.GetPort()); err != nil {
 		log.Fatalln(err)
 	}
 }

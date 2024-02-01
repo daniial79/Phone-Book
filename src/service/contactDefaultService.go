@@ -4,6 +4,7 @@ import (
 	"github.com/daniial79/Phone-Book/src/core"
 	"github.com/daniial79/Phone-Book/src/dto"
 	"github.com/daniial79/Phone-Book/src/errs"
+	"github.com/daniial79/Phone-Book/src/utils"
 )
 
 // ContactDefaultService primary actor
@@ -15,21 +16,21 @@ func NewContactDefaultService(repo core.ContactRepositoryDb) ContactDefaultServi
 	return ContactDefaultService{repo}
 }
 
-func (s ContactDefaultService) NewContact(requestBody dto.NewContactRequest) (*dto.NewContactResponse, *errs.AppError) {
+func (s ContactDefaultService) NewContact(username string, requestBody dto.NewContactRequest) (*dto.NewContactResponse, *errs.AppError) {
 	coreTypedObject := new(core.Contact)
 
-	if !requestBody.IsValid() {
-		return nil, errs.NewUnProcessableErr("Unprocessable request")
+	if appErr := requestBody.Validate(); appErr != nil {
+		return nil, appErr
 	}
 
-	coreTypedObject.Id = ""
+	coreTypedObject.Id = utils.EmptyString
 	coreTypedObject.FirstName = requestBody.FirstName
 	coreTypedObject.LastName = requestBody.LastName
 
 	for _, number := range requestBody.PhoneNumbers {
 		coreTypedObject.PhoneNumbers = append(coreTypedObject.PhoneNumbers, core.Number{
-			Id:          "",
-			ContactId:   "",
+			Id:          utils.EmptyString,
+			ContactId:   utils.EmptyString,
 			PhoneNumber: number.Number,
 			Label:       number.Label,
 		})
@@ -37,13 +38,13 @@ func (s ContactDefaultService) NewContact(requestBody dto.NewContactRequest) (*d
 
 	for _, email := range requestBody.Emails {
 		coreTypedObject.Emails = append(coreTypedObject.Emails, core.Email{
-			Id:        "",
-			ContactId: "",
+			Id:        utils.EmptyString,
+			ContactId: utils.EmptyString,
 			Address:   email.Address,
 		})
 	}
 
-	createdContact, err := s.repo.CreateContact(coreTypedObject)
+	createdContact, err := s.repo.CreateContact(username, coreTypedObject)
 	if err != nil {
 		return nil, err
 	}
@@ -54,8 +55,8 @@ func (s ContactDefaultService) NewContact(requestBody dto.NewContactRequest) (*d
 
 func (s ContactDefaultService) AddNewNumbers(requestBody []dto.AddNumberRequest, contactId string) ([]dto.AddNumberResponse, *errs.AppError) {
 	for _, r := range requestBody {
-		if !r.IsValid() {
-			return nil, errs.NewUnProcessableErr("Unprocessable request")
+		if appErr := r.Validate(); appErr != nil {
+			return nil, appErr
 		}
 	}
 
@@ -63,7 +64,7 @@ func (s ContactDefaultService) AddNewNumbers(requestBody []dto.AddNumberRequest,
 
 	for i, numberRequest := range requestBody {
 		coreTypedNumbers[i] = core.Number{
-			Id:          "",
+			Id:          utils.EmptyString,
 			ContactId:   contactId,
 			PhoneNumber: numberRequest.Number,
 			Label:       numberRequest.Label,
@@ -87,14 +88,14 @@ func (s ContactDefaultService) AddNewEmails(requestBody []dto.AddEmailRequest, c
 	coreTypedEmails := make([]core.Email, len(requestBody))
 
 	for _, r := range requestBody {
-		if !r.IsValid() {
-			return nil, errs.NewUnProcessableErr("Unprocessable request")
+		if appErr := r.Validate(); appErr != nil {
+			return nil, appErr
 		}
 	}
 
 	for i, email := range requestBody {
 		coreTypedEmails[i] = core.Email{
-			Id:        "",
+			Id:        utils.EmptyString,
 			ContactId: contactId,
 			Address:   email.Address,
 		}
@@ -113,8 +114,8 @@ func (s ContactDefaultService) AddNewEmails(requestBody []dto.AddEmailRequest, c
 	return response, nil
 }
 
-func (s ContactDefaultService) GetContacts() ([]dto.NewContactResponse, *errs.AppError) {
-	coreTypedContacts, err := s.repo.GetAllContacts()
+func (s ContactDefaultService) GetContacts(username string) ([]dto.NewContactResponse, *errs.AppError) {
+	coreTypedContacts, err := s.repo.GetAllContacts(username)
 	if err != nil {
 		return nil, err
 	}
@@ -196,8 +197,8 @@ func (s ContactDefaultService) DeleteContact(cId string) (*dto.NoContentResponse
 
 func (s ContactDefaultService) UpdateContactNumber(cId, nId string, requestBody dto.UpdateNumberRequest) (*dto.UpdateNumberResponse, *errs.AppError) {
 
-	if !requestBody.IsValid() {
-		return nil, errs.NewUnProcessableErr("Unprocessable request")
+	if appErr := requestBody.Validate(); appErr != nil {
+		return nil, appErr
 	}
 
 	coreTypedNumber := core.Number{
@@ -219,8 +220,8 @@ func (s ContactDefaultService) UpdateContactNumber(cId, nId string, requestBody 
 
 func (s ContactDefaultService) UpdateContactEmail(cId, eId string, requestBody dto.UpdateEmailRequest) (*dto.UpdateEmailResponse, *errs.AppError) {
 
-	if !requestBody.IsValid() {
-		return nil, errs.NewUnProcessableErr("Unprocessable request")
+	if appErr := requestBody.Validate(); appErr != nil {
+		return nil, errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
 	}
 
 	coreTypedEmail := core.Email{
@@ -240,8 +241,8 @@ func (s ContactDefaultService) UpdateContactEmail(cId, eId string, requestBody d
 
 func (s ContactDefaultService) UpdateContact(cId string, requestBody dto.UpdateContactRequest) (*dto.UpdateContactResponse, *errs.AppError) {
 
-	if !requestBody.IsValid() {
-		return nil, errs.NewUnProcessableErr("Unprocessable request")
+	if appErr := requestBody.Validate(); appErr != nil {
+		return nil, errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
 	}
 
 	coreTypedContact := core.Contact{
