@@ -15,6 +15,7 @@ type User struct {
 	Username    string
 	Password    string
 	PhoneNumber string `db:"phone_number"`
+	Role        string `db:"user_role"`
 	CreatedAt   string `db:"created_at"`
 	UpdatedAt   string `db:"updated_at"`
 }

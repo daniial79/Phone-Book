@@ -18,11 +18,11 @@ func NewUserRepositoryDb(client *sql.DB) UserRepositoryDb {
 }
 
 func (r UserRepositoryDb) CreateUser(u User) (*User, *errs.AppError) {
-	insertSql := `INSERT INTO users(username, password, phone_number, created_at, updated_at) 
-				  VALUES ($1, $2, $3, $4, $5) RETURNING id`
+	insertSql := `INSERT INTO users(username, password, phone_number, user_role ,created_at, updated_at) 
+				  VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
 
 	var insertedId string
-	row := r.client.QueryRow(insertSql, u.Username, u.Password, u.PhoneNumber, u.CreatedAt, u.UpdatedAt)
+	row := r.client.QueryRow(insertSql, u.Username, u.Password, u.PhoneNumber, u.Role, u.CreatedAt, u.UpdatedAt)
 
 	if err := row.Scan(&insertedId); err != nil {
 		fmt.Println(err)
