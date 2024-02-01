@@ -29,17 +29,13 @@ func (r CreateUserRequest) Validate() *errs.AppError {
 		return errs.NewUnProcessableErr(errs.ShortPasswordErr)
 	}
 
-	if r.Role != utils.AdminROleString && r.Role != utils.UserRoleString {
-		return errs.NewUnProcessableErr(errs.UserRoleErr)
-	}
-
 	return nil
 }
 
 func (r CreateUserRequest) SetUserRole() string {
-	if r.Role == utils.EmptyString {
+	if r.Role != utils.AdminRoleString {
 		return utils.UserRoleString
 	}
 
-	return utils.AdminROleString
+	return utils.AdminRoleString
 }

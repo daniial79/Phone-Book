@@ -6,5 +6,5 @@ const (
 	JsonIndentation = "  "
 	EmptyString     = ""
 	UserRoleString  = "user"
-	AdminROleString = "admin"
+	AdminRoleString = "admin"
 )
