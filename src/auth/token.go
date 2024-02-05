@@ -66,10 +66,7 @@ func ParseJwtWithClaims(tokenString string) (string, *errs.AppError) {
 	})
 
 	if err != nil {
-		if errors.Is(err, jwt.ErrSignatureInvalid) {
-			return utils.EmptyString, errs.NewUnAuthorizedErr(errs.ErrUnauthorized)
-		}
-		return utils.EmptyString, errs.NewBadRequestErr(errs.ErrBadRequest)
+		return utils.EmptyString, errs.NewUnAuthorizedErr(errs.ErrUnauthorized)
 	}
 
 	if !token.Valid {
