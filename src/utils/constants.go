@@ -1,6 +1,7 @@
 package utils
 
 const (
+	InvalidToken          = "Invalid token"
 	AccessTokenKey        = "Access-Token"
 	RefreshTokenKey       = "Refresh-Token"
 	JsonIndentation       = "  "

@@ -12,15 +12,15 @@ type UserLoginRequest struct {
 
 func (r UserLoginRequest) Validate() *errs.AppError {
 	if r.Username == utils.EmptyString && r.Password == utils.EmptyString {
-		return errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
+		return errs.NewUnProcessableErr(errs.ErrUnprocessableRequest)
 	}
 
 	if r.Username == utils.EmptyString || r.Password == utils.EmptyString {
-		return errs.NewCredentialsErr(errs.InsufficientCredentialsErr)
+		return errs.NewCredentialsErr(errs.ErrInsufficientCredentials)
 	}
 
 	if len(r.Password) < 8 {
-		return errs.NewUnProcessableErr(errs.ShortPasswordErr)
+		return errs.NewUnProcessableErr(errs.ErrShortPassword)
 	}
 
 	return nil

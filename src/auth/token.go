@@ -17,11 +17,7 @@ type UserClaim struct {
 	jwt.StandardClaims
 }
 
-func generateToken(
-	username string,
-	ExpiresAt time.Time,
-
-) (string, *errs.AppError) {
+func generateToken(username string, ExpiresAt time.Time) (string, *errs.AppError) {
 	c := UserClaim{
 		Username: username,
 		StandardClaims: jwt.StandardClaims{
@@ -35,7 +31,7 @@ func generateToken(
 	stringToken, err := token.SignedString([]byte(config.GetJwtKey()))
 	if err != nil {
 		logger.Error("Error while generating string token")
-		return utils.EmptyString, errs.NewUnexpectedErr(errs.InternalErr)
+		return utils.EmptyString, errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
 	return stringToken, nil
@@ -71,13 +67,13 @@ func ParseJwtWithClaims(tokenString string) (string, *errs.AppError) {
 
 	if err != nil {
 		if errors.Is(err, jwt.ErrSignatureInvalid) {
-			return utils.EmptyString, errs.NewUnAuthorizedErr(errs.UnauthorizedErr)
+			return utils.EmptyString, errs.NewUnAuthorizedErr(errs.ErrUnauthorized)
 		}
-		return utils.EmptyString, errs.NewBadRequestErr(errs.BadRequestErr)
+		return utils.EmptyString, errs.NewBadRequestErr(errs.ErrBadRequest)
 	}
 
 	if !token.Valid {
-		return utils.EmptyString, errs.NewUnAuthorizedErr(errs.InvalidToken)
+		return utils.EmptyString, errs.NewUnAuthorizedErr(utils.InvalidToken)
 	}
 
 	return uc.Username, nil
@@ -98,7 +94,7 @@ func ExpireAuthCookies(ctx *echo.Context) *errs.AppError {
 	refreshCookie, err := (*ctx).Cookie(utils.RefreshTokenKey)
 	if err != nil {
 		if errors.Is(err, http.ErrNoCookie) {
-			return errs.NewNotFoundErr(errs.CookieNotFoundErr)
+			return errs.NewNotFoundErr(errs.ErrCookieNotFound)
 		}
 	}
 	refreshCookie.Expires = time.Now()
@@ -106,7 +102,7 @@ func ExpireAuthCookies(ctx *echo.Context) *errs.AppError {
 	accessCookie, err := (*ctx).Cookie(utils.AccessTokenKey)
 	if err != nil {
 		if errors.Is(err, http.ErrNoCookie) {
-			return errs.NewNotFoundErr(errs.CookieNotFoundErr)
+			return errs.NewNotFoundErr(errs.ErrCookieNotFound)
 		}
 	}
 	accessCookie.Expires = time.Now()

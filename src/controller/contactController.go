@@ -31,7 +31,7 @@ func (c ContactController) NewContact(ctx echo.Context) error {
 	username, isThere := ctx.Get("username").(string)
 	if !isThere {
 		logger.Error("username is not embedded inside controller's context")
-		appErr := errs.NewUnexpectedErr(errs.BadRequestErr)
+		appErr := errs.NewUnexpectedErr(errs.ErrBadRequest)
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
 
@@ -82,7 +82,7 @@ func (c ContactController) GetContacts(ctx echo.Context) error {
 	username, isThere := ctx.Get("username").(string)
 	if !isThere {
 		logger.Error("username is not embedded inside controller's context")
-		appErr := errs.NewUnexpectedErr(errs.BadRequestErr)
+		appErr := errs.NewUnexpectedErr(errs.ErrBadRequest)
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
 

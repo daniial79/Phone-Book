@@ -11,7 +11,7 @@ func (r *AddEmailRequest) Validate() *errs.AppError {
 	requestLiteralValue := *r
 
 	if requestLiteralValue == zeroValuedSample {
-		return errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
+		return errs.NewUnProcessableErr(errs.ErrUnprocessableRequest)
 	}
 
 	return nil

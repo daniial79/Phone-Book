@@ -14,7 +14,7 @@ var CheckAccessToken echo.MiddlewareFunc = func(next echo.HandlerFunc) echo.Hand
 		cookie, err := ctx.Cookie(utils.AccessTokenKey)
 		if err != nil {
 			if errors.Is(err, http.ErrNoCookie) {
-				appErr := errs.NewBadRequestErr(errs.CookieNotFoundErr)
+				appErr := errs.NewBadRequestErr(errs.ErrCookieNotFound)
 				return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 			}
 		}

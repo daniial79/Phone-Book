@@ -27,10 +27,10 @@ func (r ContactRepositoryDb) GetContactOwnerByUsername(username string) (string,
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return utils.EmptyString, errs.NewNotFoundErr(errs.UserNotFoundErr)
+			return utils.EmptyString, errs.NewNotFoundErr(errs.ErrUserNotFound)
 		}
 
-		return utils.EmptyString, errs.NewUnexpectedErr(errs.InternalErr)
+		return utils.EmptyString, errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
 	return userId, nil
@@ -53,7 +53,7 @@ func (r ContactRepositoryDb) CreateContact(username string, c *Contact) (*Contac
 	//inserting new record to contact tables
 	if err != nil {
 		logger.Error("Error while starting transaction in order to create new contact: " + err.Error())
-		return nil, errs.NewUnexpectedErr(errs.InternalErr)
+		return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
 	contactInsertSql := `INSERT INTO contacts(first_name, last_name, owner_id) VALUES($1, $2, $3) RETURNING id`
@@ -67,7 +67,7 @@ func (r ContactRepositoryDb) CreateContact(username string, c *Contact) (*Contac
 			logger.Error("Error while rollback the crate contact transaction: " + txErr.Error())
 		}
 		logger.Error("Error while fetching last inserted id from contact tables: " + err.Error())
-		return nil, errs.NewUnexpectedErr(errs.InternalErr)
+		return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
 	// This will be used for creating contact assets
@@ -91,7 +91,7 @@ func (r ContactRepositoryDb) CreateContact(username string, c *Contact) (*Contac
 				logger.Error("Error while rollback the crate contact transaction: " + txErr.Error())
 			}
 			logger.Error("Error while fetching last inserted id from numbers tables: " + err.Error())
-			return nil, errs.NewUnexpectedErr(errs.InternalErr)
+			return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 		}
 
 		number.Id = insertedNumberId
@@ -112,7 +112,7 @@ func (r ContactRepositoryDb) CreateContact(username string, c *Contact) (*Contac
 				logger.Error("Error while rollback the crate contact transaction: " + txErr.Error())
 			}
 			logger.Error("Error while fetching last inserted id from emails tables: " + err.Error())
-			return nil, errs.NewUnexpectedErr(errs.InternalErr)
+			return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 		}
 
 		email.Id = insertedEmailId
@@ -124,7 +124,7 @@ func (r ContactRepositoryDb) CreateContact(username string, c *Contact) (*Contac
 	txErr := tx.Commit()
 	if txErr != nil {
 		logger.Error("Error while committing the new created contact transaction")
-		return nil, errs.NewUnexpectedErr(errs.InternalErr)
+		return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
 	c.PhoneNumbers = insertedNumbers
@@ -140,10 +140,10 @@ func (r ContactRepositoryDb) CheckContactExistenceById(cId string) *errs.AppErro
 	err := row.Scan(&contactId)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return errs.NewNotFoundErr(errs.ContactNotFoundErr)
+			return errs.NewNotFoundErr(errs.ErrContactNotFound)
 		}
 		logger.Error("Error while retrieving contact id for existence check (number repo): " + err.Error())
-		return errs.NewUnexpectedErr(errs.InternalErr)
+		return errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 	return nil
 }
@@ -167,7 +167,7 @@ func (r ContactRepositoryDb) AddNewNumber(n []Number) ([]Number, *errs.AppError)
 		err := row.Scan(&insertedId)
 		if err != nil {
 			logger.Error("Error while retrieving id for last inserted number into existing contact: " + err.Error())
-			return nil, errs.NewUnexpectedErr(errs.InternalErr)
+			return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 
 		}
 
@@ -196,7 +196,7 @@ func (r ContactRepositoryDb) AddNewEmails(e []Email) ([]Email, *errs.AppError) {
 		err := row.Scan(&insertedRecordId)
 		if err != nil {
 			logger.Error("Error while retrieving id for last inserted email into existing contact:" + err.Error())
-			return nil, errs.NewUnexpectedErr(errs.InternalErr)
+			return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 		}
 
 		email.Id = insertedRecordId
@@ -210,7 +210,7 @@ func (r ContactRepositoryDb) AddNewEmails(e []Email) ([]Email, *errs.AppError) {
 func (r ContactRepositoryDb) GetAllContacts(username string) ([]Contact, *errs.AppError) {
 	ownerId, appErr := r.GetContactOwnerByUsername(username)
 	if appErr != nil {
-		return nil, errs.NewNotFoundErr(errs.UserNotFoundErr)
+		return nil, errs.NewNotFoundErr(errs.ErrUserNotFound)
 	}
 
 	contacts := make([]Contact, 0)
@@ -219,7 +219,7 @@ func (r ContactRepositoryDb) GetAllContacts(username string) ([]Contact, *errs.A
 	rows, err := r.client.Query(selectContactSql, ownerId)
 	if err != nil {
 		logger.Error("Error while querying contacts table: " + err.Error())
-		return nil, errs.NewUnexpectedErr(errs.InternalErr)
+		return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
 	for rows.Next() {
@@ -227,7 +227,7 @@ func (r ContactRepositoryDb) GetAllContacts(username string) ([]Contact, *errs.A
 		err = rows.Scan(&c.Id, &c.FirstName, &c.LastName)
 		if err != nil {
 			logger.Error("Error while scanning retrieved records from contacts table: " + err.Error())
-			return nil, errs.NewUnexpectedErr(errs.InternalErr)
+			return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 		}
 		contacts = append(contacts, c)
 	}
@@ -246,7 +246,7 @@ func (r ContactRepositoryDb) GetContactNumbers(cId string) ([]Number, *errs.AppE
 			return nil, errs.NewNotFoundErr("no number associated with this contact id")
 		}
 		logger.Error("Error while selecting numbers associated with specific contact: " + err.Error())
-		return nil, errs.NewUnexpectedErr(errs.InternalErr)
+		return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
 	for rows.Next() {
@@ -254,7 +254,7 @@ func (r ContactRepositoryDb) GetContactNumbers(cId string) ([]Number, *errs.AppE
 		err = rows.Scan(&n.Id, &n.ContactId, &n.PhoneNumber, &n.Label)
 		if err != nil {
 			logger.Error("Error while scanning retrieved set of numbers: " + err.Error())
-			return nil, errs.NewUnexpectedErr(errs.InternalErr)
+			return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 		}
 		numbers = append(numbers, n)
 	}
@@ -273,7 +273,7 @@ func (r ContactRepositoryDb) GetContactEmails(cId string) ([]Email, *errs.AppErr
 			return nil, errs.NewNotFoundErr("no email associated with this contact id")
 		}
 		logger.Error("Error while selecting emails associated with specific contact: " + err.Error())
-		return nil, errs.NewUnexpectedErr(errs.InternalErr)
+		return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
 	for rows.Next() {
@@ -281,7 +281,7 @@ func (r ContactRepositoryDb) GetContactEmails(cId string) ([]Email, *errs.AppErr
 		err = rows.Scan(&e.Id, &e.ContactId, &e.Address)
 		if err != nil {
 			logger.Error("Error while scanning retrieved set of emails: " + err.Error())
-			return nil, errs.NewUnexpectedErr(errs.InternalErr)
+			return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 		}
 		emails = append(emails, e)
 	}
@@ -298,10 +298,10 @@ func (r ContactRepositoryDb) DeleteContactEmail(cId, eId string) *errs.AppError 
 	err := row.Scan(&deletedEmailId)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return errs.NewNotFoundErr(errs.EmailNotFoundErr)
+			return errs.NewNotFoundErr(errs.ErrEmailNotFound)
 		}
 		logger.Error("Error while removing a record from emails table: " + err.Error())
-		return errs.NewUnexpectedErr(errs.InternalErr)
+		return errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
 	return nil
@@ -316,9 +316,9 @@ func (r ContactRepositoryDb) DeleteContactPhoneNumber(cId, nId string) *errs.App
 	err := row.Scan(&deletedNumberId)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return errs.NewNotFoundErr(errs.NumberNotFoundErr)
+			return errs.NewNotFoundErr(errs.ErrNumberNotFound)
 		}
-		return errs.NewUnexpectedErr(errs.InternalErr)
+		return errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
 	return nil
@@ -329,7 +329,7 @@ func (r ContactRepositoryDb) DeleteContact(cId string) *errs.AppError {
 	tx, err := r.client.Begin()
 	if err != nil {
 		logger.Error("Error while starting new transaction for cascading deletion of contact: " + err.Error())
-		return errs.NewUnexpectedErr(errs.InternalErr)
+		return errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
 	pnDeleteQuery := `DELETE FROM numbers WHERE contact_id = $1`
@@ -340,7 +340,7 @@ func (r ContactRepositoryDb) DeleteContact(cId string) *errs.AppError {
 		txErr := tx.Rollback()
 		if txErr != nil {
 			logger.Error("Error while rollback from cascading deletion on numbers table:" + txErr.Error())
-			return errs.NewUnexpectedErr(errs.InternalErr)
+			return errs.NewUnexpectedErr(errs.ErrInternal)
 		}
 	}
 
@@ -352,7 +352,7 @@ func (r ContactRepositoryDb) DeleteContact(cId string) *errs.AppError {
 		txErr := tx.Rollback()
 		if txErr != nil {
 			logger.Error("Error while rollback from cascading deletion on emails table:" + txErr.Error())
-			return errs.NewUnexpectedErr(errs.InternalErr)
+			return errs.NewUnexpectedErr(errs.ErrInternal)
 		}
 	}
 
@@ -367,7 +367,7 @@ func (r ContactRepositoryDb) DeleteContact(cId string) *errs.AppError {
 
 		if txErr := tx.Rollback(); txErr != nil {
 			logger.Error("Error while rollback from deleting record from contacts table:" + txErr.Error())
-			return errs.NewUnexpectedErr(errs.InternalErr)
+			return errs.NewUnexpectedErr(errs.ErrInternal)
 		}
 	}
 
@@ -404,10 +404,10 @@ func (r ContactRepositoryDb) UpdateContactPhoneNumber(newNumber Number) (*Number
 	err := row.Scan(&retrievedId)
 	if err != nil {
 		if errors.Is(sql.ErrNoRows, err) {
-			return nil, errs.NewNotFoundErr(errs.NumberNotFoundErr)
+			return nil, errs.NewNotFoundErr(errs.ErrNumberNotFound)
 		}
 		logger.Error("Error while updating record in numbers table: " + err.Error())
-		return nil, errs.NewUnexpectedErr(errs.InternalErr)
+		return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
 	return &newNumber, nil
@@ -431,7 +431,7 @@ func (r ContactRepositoryDb) UpdateContactEmail(newEmail Email) (*Email, *errs.A
 			return nil, errs.NewNotFoundErr("email with this id not found")
 		}
 		logger.Error("Error while updating record in emails table: " + err.Error())
-		return nil, errs.NewUnexpectedErr(errs.InternalErr)
+		return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
 	return &newEmail, nil
@@ -462,7 +462,7 @@ func (r ContactRepositoryDb) UpdateContact(newContact Contact) (*Contact, *errs.
 	err := row.Scan(&retrievedId)
 	if err != nil {
 		logger.Error("Error while updating record in contact tables: " + err.Error())
-		return nil, errs.NewUnexpectedErr(errs.InternalErr)
+		return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
 	return &newContact, nil

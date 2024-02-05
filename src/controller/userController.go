@@ -78,7 +78,7 @@ func (c UserController) LogInController(ctx echo.Context) error {
 func (c UserController) RefreshTokenController(ctx echo.Context) error {
 	cookie, err := ctx.Cookie(utils.RefreshTokenKey)
 	if errors.Is(err, http.ErrNoCookie) {
-		appErr := errs.NewUnAuthorizedErr(errs.CookieNotFoundErr)
+		appErr := errs.NewUnAuthorizedErr(errs.ErrCookieNotFound)
 		return ctx.JSONPretty(appErr.StatusCode, appErr.AsMessage(), utils.JsonIndentation)
 	}
 

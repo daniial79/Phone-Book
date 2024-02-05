@@ -12,7 +12,7 @@ var appConf Config
 
 func envVarSanityCheck(envVar string) string {
 	if len(os.Getenv(envVar)) == 0 {
-		log.Fatalln(errs.MissedEnvVarErr + envVar)
+		log.Fatalln(errs.ErrMissedEnvVar + envVar)
 	}
 	return os.Getenv(envVar)
 }

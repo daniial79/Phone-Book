@@ -16,17 +16,17 @@ func (r CreateUserRequest) Validate() *errs.AppError {
 	if r.Username == utils.EmptyString &&
 		r.Password == utils.EmptyString &&
 		r.PhoneNumber == utils.EmptyString {
-		return errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
+		return errs.NewUnProcessableErr(errs.ErrUnprocessableRequest)
 	}
 
 	if r.Username == utils.EmptyString ||
 		r.Password == utils.EmptyString ||
 		r.PhoneNumber == utils.EmptyString {
-		return errs.NewCredentialsErr(errs.InsufficientCredentialsErr)
+		return errs.NewCredentialsErr(errs.ErrInsufficientCredentials)
 	}
 
 	if len(r.Password) < utils.MinimumPasswordLength {
-		return errs.NewUnProcessableErr(errs.ShortPasswordErr)
+		return errs.NewUnProcessableErr(errs.ErrShortPassword)
 	}
 
 	if r.Role == utils.EmptyString || r.Role == utils.UserRoleString {
@@ -34,7 +34,7 @@ func (r CreateUserRequest) Validate() *errs.AppError {
 	}
 
 	if r.Role != utils.AdminRoleString {
-		return errs.NewUnProcessableErr(errs.UserRoleErr)
+		return errs.NewUnProcessableErr(errs.ErrUserRole)
 	}
 
 	return nil

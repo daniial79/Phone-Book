@@ -221,7 +221,7 @@ func (s ContactDefaultService) UpdateContactNumber(cId, nId string, requestBody 
 func (s ContactDefaultService) UpdateContactEmail(cId, eId string, requestBody dto.UpdateEmailRequest) (*dto.UpdateEmailResponse, *errs.AppError) {
 
 	if appErr := requestBody.Validate(); appErr != nil {
-		return nil, errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
+		return nil, errs.NewUnProcessableErr(errs.ErrUnprocessableRequest)
 	}
 
 	coreTypedEmail := core.Email{
@@ -242,7 +242,7 @@ func (s ContactDefaultService) UpdateContactEmail(cId, eId string, requestBody d
 func (s ContactDefaultService) UpdateContact(cId string, requestBody dto.UpdateContactRequest) (*dto.UpdateContactResponse, *errs.AppError) {
 
 	if appErr := requestBody.Validate(); appErr != nil {
-		return nil, errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
+		return nil, errs.NewUnProcessableErr(errs.ErrUnprocessableRequest)
 	}
 
 	coreTypedContact := core.Contact{

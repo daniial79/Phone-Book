@@ -27,7 +27,7 @@ func (s UserDefaultService) SignUpUser(requestBody dto.CreateUserRequest) (*dto.
 	hashedPassword, err := auth.HashPassword(requestBody.Password)
 	if err != nil {
 		logger.Error("Error while hashing new user's password")
-		return nil, errs.NewUnexpectedErr(errs.InternalErr)
+		return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
 	requestBody.Role = requestBody.SetUserRole()
@@ -66,10 +66,10 @@ func (s UserDefaultService) LogInUser(requestBody dto.UserLoginRequest) (*dto.Us
 	err := auth.ComparePasswords(coreTypedUser.Password, password)
 	if err != nil {
 		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-			return nil, errs.NewUnAuthorizedErr(errs.UnauthorizedErr)
+			return nil, errs.NewUnAuthorizedErr(errs.ErrUnauthorized)
 		}
 		logger.Error("Error while comparing hash and plain text password: " + err.Error())
-		return nil, errs.NewUnexpectedErr(errs.InternalErr)
+		return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
 	response := coreTypedUser.ToLoggedInResponseDto()

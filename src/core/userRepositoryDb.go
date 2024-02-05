@@ -30,12 +30,12 @@ func (r UserRepositoryDb) CreateUser(u User) (*User, *errs.AppError) {
 		var pgerr *pq.Error
 		if errors.As(err, &pgerr) {
 			if pgerr.Code == "23505" {
-				return nil, errs.NewUnProcessableErr(errs.UsernameUniquenessViolationErr)
+				return nil, errs.NewUnProcessableErr(errs.ErrUsernameUniquenessViolation)
 			}
 		}
 
 		logger.Error("Error while inserting new record to user table")
-		return nil, errs.NewUnexpectedErr(errs.InternalErr)
+		return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
 	u.Id = insertedId
@@ -53,7 +53,7 @@ func (r UserRepositoryDb) GetUserByUsername(username string) (*User, *errs.AppEr
 			return nil, errs.NewNotFoundErr("There is no user with such username")
 		}
 		logger.Error("Error while getting user by username: " + err.Error())
-		return nil, errs.NewUnexpectedErr(errs.InternalErr)
+		return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
 	return &fetchedUser, nil

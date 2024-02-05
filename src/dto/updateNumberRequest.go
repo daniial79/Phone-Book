@@ -12,7 +12,7 @@ func (r *UpdateNumberRequest) Validate() *errs.AppError {
 	requestLiteralValue := *r
 
 	if requestLiteralValue == zeroValuedSample {
-		return errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
+		return errs.NewUnProcessableErr(errs.ErrUnprocessableRequest)
 	}
 
 	return nil

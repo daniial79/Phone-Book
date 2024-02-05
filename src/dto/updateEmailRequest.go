@@ -11,7 +11,7 @@ func (r *UpdateEmailRequest) Validate() *errs.AppError {
 	requestLiteralValue := *r
 
 	if requestLiteralValue == emptyLiteralSample {
-		return errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
+		return errs.NewUnProcessableErr(errs.ErrUnprocessableRequest)
 	}
 
 	return nil

@@ -31,7 +31,7 @@ func (r NewContactRequest) Validate() *errs.AppError {
 		len(r.PhoneNumbers) == 0 &&
 		len(r.PhoneNumbers) == 0 {
 
-		return errs.NewUnProcessableErr(errs.UnprocessableRequestErr)
+		return errs.NewUnProcessableErr(errs.ErrUnprocessableRequest)
 
 	}
 
