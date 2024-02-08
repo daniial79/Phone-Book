@@ -123,7 +123,7 @@ func (r ContactRepositoryDb) CreateContact(username string, c *Contact) (*Contac
 
 	txErr := tx.Commit()
 	if txErr != nil {
-		logger.Error("Error while committing the new created contact transaction")
+		logger.Error("Error while committing the new created contact transaction: " + txErr.Error())
 		return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
@@ -372,7 +372,7 @@ func (r ContactRepositoryDb) DeleteContact(cId string) *errs.AppError {
 	}
 
 	if txErr := tx.Commit(); txErr != nil {
-		logger.Error("Error while committing the started transaction inside contact deletion")
+		logger.Error("Error while committing the started transaction inside contact deletion: " + err.Error())
 	}
 
 	return nil

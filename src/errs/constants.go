@@ -15,4 +15,6 @@ const (
 	ErrEmailNotFound               = "email not found"
 	ErrNumberNotFound              = "phone number not found"
 	ErrUserRole                    = "user role must be 'admin' or 'user'"
+	ErrInvalidToken                = "Bearer Token is invalid"
+	ErrSigningMethodMismatch       = "signing algorithm mismatch"
 )

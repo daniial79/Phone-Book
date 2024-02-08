@@ -12,13 +12,13 @@ import (
 	"time"
 )
 
-type UserClaim struct {
+type userClaim struct {
 	Username string `json:"username"`
 	jwt.StandardClaims
 }
 
 func generateToken(username string, ExpiresAt time.Time) (string, *errs.AppError) {
-	c := UserClaim{
+	c := userClaim{
 		Username: username,
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  time.Now().Unix(),
@@ -30,7 +30,7 @@ func generateToken(username string, ExpiresAt time.Time) (string, *errs.AppError
 
 	stringToken, err := token.SignedString([]byte(config.GetJwtKey()))
 	if err != nil {
-		logger.Error("Error while generating string token")
+		logger.Error("Error while generating string token: " + err.Error())
 		return utils.EmptyString, errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
@@ -60,20 +60,25 @@ func NewRefreshToken(username string) (string, *errs.AppError) {
 }
 
 func ParseJwtWithClaims(tokenString string) (string, *errs.AppError) {
-	var uc UserClaim
-	token, err := jwt.ParseWithClaims(tokenString, &uc, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &userClaim{}, func(token *jwt.Token) (interface{}, error) {
+		if token.Method.Alg() != jwt.SigningMethodHS256.Alg() {
+			return nil, errors.New(errs.ErrSigningMethodMismatch)
+		}
+
 		return []byte(config.GetJwtKey()), nil
 	})
 
 	if err != nil {
-		return utils.EmptyString, errs.NewUnAuthorizedErr(errs.ErrUnauthorized)
+		return utils.EmptyString, errs.NewUnAuthorizedErr(errs.ErrInvalidToken)
 	}
+
+	claims := token.Claims.(*userClaim)
 
 	if !token.Valid {
-		return utils.EmptyString, errs.NewUnAuthorizedErr(utils.InvalidToken)
+		return utils.EmptyString, errs.NewUnAuthorizedErr(errs.ErrInvalidToken)
 	}
 
-	return uc.Username, nil
+	return claims.Username, nil
 }
 
 func SetAuthCookie(ctx *echo.Context, stringToken string, name string, expAt time.Time) {

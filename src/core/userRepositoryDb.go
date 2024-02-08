@@ -34,7 +34,7 @@ func (r UserRepositoryDb) CreateUser(u User) (*User, *errs.AppError) {
 			}
 		}
 
-		logger.Error("Error while inserting new record to user table")
+		logger.Error("Error while inserting new record to user table: " + err.Error())
 		return nil, errs.NewUnexpectedErr(errs.ErrInternal)
 	}
 
